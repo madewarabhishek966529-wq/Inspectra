@@ -1,0 +1,11 @@
+{
+  "name": "inspectra-test-fixtures",
+  "version": "1.0.0",
+  "description": "Controlled test website with intentional defects for Inspectra AI verification",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {},
+  "private": true
+}
