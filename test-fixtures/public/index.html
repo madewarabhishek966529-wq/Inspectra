@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Inspectra AI official target test fixture suite with seeded functional and visual defects.">
+  <title>Inspectra QA Target Test Bed</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f8fafc;
+      --accent: #38bdf8;
+      --border: #334155;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #090d16;
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav a {
+      color: var(--accent);
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-weight: 500;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .hero {
+      text-align: center;
+      padding: 3rem 1rem;
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.1) 0%, transparent 100%);
+      border-radius: 12px;
+      margin-bottom: 2.5rem;
+      border: 1px solid var(--border);
+    }
+    h1 {
+      font-size: 2.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+    .card h3 {
+      margin-top: 0;
+      color: var(--accent);
+    }
+    .card p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .badge-defect {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+    .badge-pass {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+    }
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 2rem;
+      color: #64748b;
+      font-size: 0.85rem;
+      margin-top: 4rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div><strong>Inspectra Target Bed v1.0</strong></div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/forms.html">Forms</a>
+      <a href="/broken-links.html">Link Tests</a>
+      <a href="/a11y-flaws.html">Accessibility</a>
+      <a href="/responsive-overflow.html">Responsive</a>
+      <a href="/console-errors.html">Runtime</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Controlled Test Target for Inspectra AI</h1>
+      <p>This fixture website contains both certified valid user flows and deliberately seeded defects for automated verification.</p>
+    </section>
+
+    <h2>Available Test Modules</h2>
+    <div class="grid">
+      <div class="card">
+        <span class="badge badge-defect">Seeded Defects: 404 & Dead Anchor</span>
+        <h3><a href="/broken-links.html" style="color:inherit;text-decoration:none;">1. Broken Links & Dead Anchors</a></h3>
+        <p>Contains internal navigable pages alongside broken 404 links and empty href attributes.</p>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-pass">Functional Forms</span>
+        <h3><a href="/forms.html" style="color:inherit;text-decoration:none;">2. Form Validation & Submissions</a></h3>
+        <p>Interactive inputs with required field triggers, invalid email rejection, and asynchronous submit.</p>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-defect">Seeded Defects: WCAG Violations</span>
+        <h3><a href="/a11y-flaws.html" style="color:inherit;text-decoration:none;">3. Accessibility (a11y) Flaws</a></h3>
+        <p>Low color contrast text, unlabelled inputs, images lacking alt text, and broken heading order.</p>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-defect">Seeded Defects: Overflow & Clipping</span>
+        <h3><a href="/responsive-overflow.html" style="color:inherit;text-decoration:none;">4. Responsive Layout Violations</a></h3>
+        <p>Elements extending past mobile viewports, clipped containers, and horizontal scrollbars.</p>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-defect">Seeded Defects: Uncaught JS & 500 API</span>
+        <h3><a href="/console-errors.html" style="color:inherit;text-decoration:none;">5. Console & Network Errors</a></h3>
+        <p>Triggers client-side JavaScript uncaught exceptions and failed HTTP 500 network requests.</p>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-pass">Visual Regression Baseline</span>
+        <h3><a href="/visual-v1.html" style="color:inherit;text-decoration:none;">6. Visual Regression Baseline</a></h3>
+        <p>Reference visual baseline card to be compared against modified v2 screenshot.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Inspectra AI Test Bed Fixture — Built for Automated QA Verification
+  </footer>
+</body>
+</html>

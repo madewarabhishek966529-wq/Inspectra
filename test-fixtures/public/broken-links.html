@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inspectra Target — Broken Links & Dead Anchors</title>
+  <style>
+    body { font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; max-width: 800px; margin: auto; }
+    a { color: #38bdf8; display: block; margin: 0.75rem 0; }
+    .box { background: #1e293b; padding: 1.5rem; border-radius: 8px; margin-top: 1.5rem; }
+  </style>
+</head>
+<body>
+  <p><a href="/">&larr; Back to Fixture Home</a></p>
+  <h1>Test Suite: Links and Navigation</h1>
+  <p>This page contains a mix of functioning and broken internal and external links for crawler validation.</p>
+
+  <div class="box">
+    <h3>Valid Links</h3>
+    <a id="valid-home-link" href="/">Valid Home Page Link (200 OK)</a>
+    <a id="valid-forms-link" href="/forms.html">Valid Forms Page Link (200 OK)</a>
+  </div>
+
+  <div class="box">
+    <h3>Seeded Link Defects</h3>
+    <!-- Broken 404 link -->
+    <a id="broken-404-link" href="/missing-report-archive-404">Broken Internal Route (/missing-report-archive-404)</a>
+    <!-- Dead anchor link -->
+    <a id="dead-anchor-link" href="#non-existent-anchor-target">Dead In-page Anchor (#non-existent-anchor-target)</a>
+    <!-- Empty href -->
+    <a id="empty-href-link" href="">Empty href Link</a>
+  </div>
+</body>
+</html>
