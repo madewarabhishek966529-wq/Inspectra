@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inspectra Target — Form Validation Suite</title>
+  <style>
+    body { font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; max-width: 600px; margin: auto; }
+    .form-group { margin-bottom: 1.25rem; }
+    label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+    input, textarea, select {
+      width: 100%; box-sizing: border-box; padding: 0.75rem;
+      background: #1e293b; border: 1px solid #334155; color: #f8fafc; border-radius: 6px;
+    }
+    input:focus, textarea:focus { border-color: #38bdf8; outline: none; }
+    button {
+      background: #38bdf8; color: #0f172a; border: none; font-weight: bold;
+      padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;
+    }
+    button:hover { background: #7dd3fc; }
+    .error-msg { color: #f87171; font-size: 0.85rem; margin-top: 0.35rem; display: none; }
+    .success-alert {
+      display: none; background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e;
+      color: #4ade80; padding: 1rem; border-radius: 6px; margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <p><a href="/" style="color:#38bdf8;">&larr; Back to Fixture Home</a></p>
+  <h1>User Registration & Feedback Form</h1>
+  <p>Test interactive form inputs, client-side validation triggers, and submission events.</p>
+
+  <form id="qa-test-form">
+    <div class="form-group">
+      <label for="username">Full Name *</label>
+      <input type="text" id="username" name="username" required minlength="3" placeholder="Jane Doe">
+      <div id="username-error" class="error-msg">Please enter at least 3 characters.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Work Email *</label>
+      <input type="email" id="email" name="email" required placeholder="jane@company.com">
+      <div id="email-error" class="error-msg">Please enter a valid email address.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="project-type">Project Type</label>
+      <select id="project-type" name="projectType">
+        <option value="saas">SaaS Web Application</option>
+        <option value="ecommerce">E-Commerce Store</option>
+        <option value="portal">Enterprise Portal</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="message">Feedback Notes</label>
+      <textarea id="message" name="message" rows="3" placeholder="Additional instructions..."></textarea>
+    </div>
+
+    <button type="submit" id="submit-btn">Submit QA Form</button>
+  </form>
+
+  <div id="form-success" class="success-alert">
+    ✓ Form successfully received and processed by test fixture backend.
+  </div>
+
+  <script>
+    document.getElementById('qa-test-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('username').value.trim();
+      const email = document.getElementById('email').value.trim();
+
+      let hasError = false;
+      if (name.length < 3) {
+        document.getElementById('username-error').style.display = 'block';
+        hasError = true;
+      } else {
+        document.getElementById('username-error').style.display = 'none';
+      }
+
+      if (!email.includes('@') || !email.includes('.')) {
+        document.getElementById('email-error').style.display = 'block';
+        hasError = true;
+      } else {
+        document.getElementById('email-error').style.display = 'none';
+      }
+
+      if (hasError) return;
+
+      fetch('/api/form-submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email })
+      }).then(res => res.json()).then(data => {
+        document.getElementById('form-success').style.display = 'block';
+      });
+    });
+  </script>
+</body>
+</html>

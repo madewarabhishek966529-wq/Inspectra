@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inspectra Target — Responsive Layout Issues</title>
+  <style>
+    body { font-family: sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 1.5rem; }
+    /* Intentional horizontal overflow element */
+    .wide-overflow-container {
+      width: 1400px;
+      background: #1e293b;
+      border: 2px solid #ef4444;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-radius: 8px;
+    }
+    .clipped-box {
+      width: 200px;
+      height: 30px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: clip;
+      border: 1px dashed #f59e0b;
+      padding: 4px;
+      background: #1e293b;
+    }
+  </style>
+</head>
+<body>
+  <p><a href="/" style="color:#38bdf8;">&larr; Back to Fixture Home</a></p>
+  <h1>Responsive Layout & Viewport Overflow Fixture</h1>
+  <p>Tests detection of horizontal scrolling, elements overflowing the viewport, and clipped content.</p>
+
+  <h3>1. Fixed-width Wide Element (Forces horizontal scroll on screens &lt; 1400px)</h3>
+  <div class="wide-overflow-container" id="overflow-element">
+    <p>This box is explicitly set to <code>width: 1400px;</code> without max-width: 100%. On mobile (390px) and tablet (768px), it protrudes drastically off screen.</p>
+  </div>
+
+  <h3>2. Clipped Content</h3>
+  <div class="clipped-box" id="clipped-element">
+    This line of text is intentionally truncated and clipped without ellipsis inside a rigid container.
+  </div>
+</body>
+</html>

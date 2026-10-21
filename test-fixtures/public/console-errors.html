@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inspectra Target — Runtime & Network Errors</title>
+  <style>
+    body { font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; max-width: 700px; margin: auto; }
+    .card { background: #1e293b; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; }
+    button { background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <p><a href="/" style="color:#38bdf8;">&larr; Back to Fixture Home</a></p>
+  <h1>Runtime Exceptions & Network Failure Fixture</h1>
+  <p>Tests Inspectra's ability to capture console errors, unhandled rejections, and network 4xx/5xx failures.</p>
+
+  <div class="card">
+    <h3>1. Missing Image Test (404 Image)</h3>
+    <p>Below is an image tag referencing a non-existent asset:</p>
+    <img src="/assets/non-existent-broken-logo.png" alt="Broken Logo" width="120" height="40" style="border:1px dashed #ef4444;">
+  </div>
+
+  <div class="card">
+    <h3>2. Uncaught JS Exception on Page Load</h3>
+    <p>A script on this page automatically throws an uncaught ReferenceError.</p>
+  </div>
+
+  <div class="card">
+    <h3>3. Failed Network Request</h3>
+    <p>A script attempts to fetch from <code>/api/data/missing-endpoint</code> which returns 500.</p>
+  </div>
+
+  <script>
+    // Trigger intentional network 500 error
+    fetch('/api/data/missing-endpoint')
+      .then(r => r.json())
+      .catch(err => console.error('[Network Error Check] Fetch failed as planned:', err));
+
+    // Trigger intentional console error
+    console.error('Inspectra SeedTest: Uncaught application exception simulated on client bootstrap');
+
+    // Also trigger runtime reference error in timeout
+    setTimeout(() => {
+      try {
+        nonExistentGlobalVariableCall();
+      } catch (e) {
+        console.error('Inspectra SeedTest Error Captured:', e.message);
+      }
+    }, 200);
+  </script>
+</body>
+</html>

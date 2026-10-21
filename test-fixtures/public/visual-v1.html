@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inspectra Target — Visual Baseline v1</title>
+  <style>
+    body { font-family: sans-serif; background: #0b0d12; color: #f4f5fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .card { background: #151923; border: 1px solid #292f40; border-radius: 12px; width: 450px; padding: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .header { background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 6px; font-weight: bold; margin-bottom: 1rem; display: inline-block; }
+    h2 { margin-top: 0; }
+    p { color: #a0a7b8; line-height: 1.6; }
+    .btn { background: #8b7cff; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="card" id="target-visual-card">
+    <div class="header">Baseline Release v1.0</div>
+    <h2>Automated Visual Baseline</h2>
+    <p>This component represents the approved master visual layout. Any unplanned shifts or color adjustments will trigger a visual regression alert.</p>
+    <button class="btn">Deploy Fix</button>
+  </div>
+</body>
+</html>
