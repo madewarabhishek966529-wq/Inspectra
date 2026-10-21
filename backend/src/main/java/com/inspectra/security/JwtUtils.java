@@ -29,13 +29,13 @@ public class JwtUtils {
                 .claim("email", email)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(getSignKey())
+                .signWith(getSigningKey())
                 .compact();
     }
 
     public String getUserIdFromToken(String token) {
         return Jwts.parser()
-                .verifyWith(getSignKey())
+                .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
@@ -44,7 +44,7 @@ public class JwtUtils {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().verifyWith(getSignKey()).build().parseSignedClaims(token);
+            Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;

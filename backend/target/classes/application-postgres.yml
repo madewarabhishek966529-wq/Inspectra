@@ -1,0 +1,21 @@
+spring:
+  config:
+    activate:
+      on-profile: postgres
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/inspectra}
+    username: ${SPRING_DATASOURCE_USERNAME:inspectra}
+    password: ${SPRING_DATASOURCE_PASSWORD:inspectra_secret}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
