@@ -1,0 +1,37 @@
+# Node
+node_modules/
+frontend/node_modules/
+worker/node_modules/
+test-fixtures/node_modules/
+dist/
+frontend/dist/
+*.log
+
+# Java / Spring Boot
+backend/target/
+backend/data/
+*.class
+*.jar
+*.war
+.flattened-pom.xml
+
+# Databases & Artifacts
+artifacts/
+backend/artifacts/
+worker/artifacts/
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
