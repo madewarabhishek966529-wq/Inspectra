@@ -24,6 +24,25 @@ public class Project {
     @Column(name = "configuration_json", columnDefinition = "TEXT")
     private String configurationJson;
 
+    @Column(name = "schedule_enabled")
+    private Boolean scheduleEnabled = false;
+
+    @Column(name = "schedule_frequency")
+    private String scheduleFrequency;
+
+    @Column(name = "schedule_cron")
+    private String scheduleCron;
+
+    @Column(name = "last_scheduled_run_at")
+    private Instant lastScheduledRunAt;
+
+    @Column(name = "next_run_at")
+    private Instant nextRunAt;
+
+    @Column(name = "alert_on_critical")
+    private Boolean alertOnCritical = true;
+
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt = Instant.now();
 
@@ -39,6 +58,8 @@ public class Project {
         this.description = description;
         this.targetUrl = targetUrl;
         this.configurationJson = configurationJson;
+        this.scheduleEnabled = false;
+        this.alertOnCritical = true;
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
     }
@@ -61,9 +82,28 @@ public class Project {
     public String getConfigurationJson() { return configurationJson; }
     public void setConfigurationJson(String configurationJson) { this.configurationJson = configurationJson; }
 
+    public Boolean getScheduleEnabled() { return scheduleEnabled != null && scheduleEnabled; }
+    public void setScheduleEnabled(Boolean scheduleEnabled) { this.scheduleEnabled = scheduleEnabled; }
+
+    public String getScheduleFrequency() { return scheduleFrequency; }
+    public void setScheduleFrequency(String scheduleFrequency) { this.scheduleFrequency = scheduleFrequency; }
+
+    public String getScheduleCron() { return scheduleCron; }
+    public void setScheduleCron(String scheduleCron) { this.scheduleCron = scheduleCron; }
+
+    public Instant getLastScheduledRunAt() { return lastScheduledRunAt; }
+    public void setLastScheduledRunAt(Instant lastScheduledRunAt) { this.lastScheduledRunAt = lastScheduledRunAt; }
+
+    public Instant getNextRunAt() { return nextRunAt; }
+    public void setNextRunAt(Instant nextRunAt) { this.nextRunAt = nextRunAt; }
+
+    public Boolean getAlertOnCritical() { return alertOnCritical != null && alertOnCritical; }
+    public void setAlertOnCritical(Boolean alertOnCritical) { this.alertOnCritical = alertOnCritical; }
+
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
     public Instant getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 }
+

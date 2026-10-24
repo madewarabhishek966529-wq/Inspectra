@@ -54,6 +54,12 @@ class InspectraApplicationTests {
         assertTrue(projectService.getProject(p.getId(), "unauthorized-user").isEmpty());
     }
 
+    @Autowired
+    private com.inspectra.service.ProjectSchedulerService schedulerService;
+
+    @Autowired
+    private com.inspectra.service.ProjectTrendService trendService;
+
     @Test
     void testSsrfProtection() {
         // Metadata endpoint must be blocked
@@ -68,4 +74,35 @@ class InspectraApplicationTests {
         var publicRes = urlValidator.validate("https://google.com", false);
         assertTrue(publicRes.safe());
     }
+
+    @Test
+    void testSchedulerFrequencyResolution() {
+        assertNotNull(schedulerService);
+        assertEquals("0 0 * * * *", schedulerService.resolveCronExpression("HOURLY", null));
+        assertEquals("0 0 */6 * * *", schedulerService.resolveCronExpression("SIX_HOURS", null));
+        assertEquals("0 0 0 * * *", schedulerService.resolveCronExpression("DAILY", null));
+        assertEquals("0 0 0 * * 1", schedulerService.resolveCronExpression("WEEKLY", null));
+
+        // 5-part cron normalized to 6-part
+        assertEquals("0 */15 * * * *", schedulerService.resolveCronExpression("CUSTOM", "*/15 * * * *"));
+
+        // Next run should be in the future
+        java.time.Instant nextRun = schedulerService.calculateNextRun("0 0 0 * * *");
+        assertNotNull(nextRun);
+        assertTrue(nextRun.isAfter(java.time.Instant.now()));
+    }
+
+    @Test
+    void testProjectTrendsComputation() {
+        String userId = "usr-trend-" + System.currentTimeMillis();
+        Project p = projectService.createProject(userId, "Trend Portal", "Trend test", "https://example.com", null);
+
+        var trends = trendService.getProjectTrends(p.getId(), userId);
+        assertNotNull(trends);
+        assertEquals(p.getId(), trends.projectId());
+        assertEquals("Trend Portal", trends.projectName());
+        assertEquals(0, trends.totalRuns());
+        assertNotNull(trends.history());
+    }
 }
+

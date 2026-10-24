@@ -24,8 +24,12 @@ public class TestRun {
     @Column(name = "scoring_version", length = 32)
     private String scoringVersion = "1.0";
 
+    @Column(name = "trigger_source", length = 32)
+    private String triggerSource = "MANUAL"; // MANUAL, SCHEDULED, CI_CD
+
     @Column(name = "overall_score")
     private Integer overallScore;
+
 
     @Column(name = "metrics_json", columnDefinition = "TEXT")
     private String metricsJson;
@@ -72,7 +76,11 @@ public class TestRun {
     public String getScoringVersion() { return scoringVersion; }
     public void setScoringVersion(String scoringVersion) { this.scoringVersion = scoringVersion; }
 
+    public String getTriggerSource() { return triggerSource != null ? triggerSource : "MANUAL"; }
+    public void setTriggerSource(String triggerSource) { this.triggerSource = triggerSource; }
+
     public Integer getOverallScore() { return overallScore; }
+
     public void setOverallScore(Integer overallScore) { this.overallScore = overallScore; }
 
     public String getMetricsJson() { return metricsJson; }

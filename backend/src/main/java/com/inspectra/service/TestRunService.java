@@ -77,6 +77,10 @@ public class TestRunService {
     ) {}
 
     public TestRun initiateRun(String projectId, String userId, RunRequest req) {
+        return initiateRun(projectId, userId, req, "MANUAL");
+    }
+
+    public TestRun initiateRun(String projectId, String userId, RunRequest req, String triggerSource) {
         Project project = projectRepository.findByIdAndOwnerId(projectId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Project not found or unauthorized."));
 
@@ -93,11 +97,15 @@ public class TestRunService {
         String runId = "run-" + UUID.randomUUID().toString().substring(0, 12);
         TestRun run = new TestRun(runId, projectId, userId, secCheck.normalizedUrl());
         run.setStatus("QUEUED");
+        run.setTriggerSource(triggerSource != null ? triggerSource : "MANUAL");
         run.setStartedAt(Instant.now());
         testRunRepository.save(run);
 
         // Record initial event
-        recordEvent(runId, "STATE_CHANGE", "QUEUED", "Job registered and queued for execution.", null);
+        String triggerMsg = "SCHEDULED".equalsIgnoreCase(triggerSource)
+                ? "Autonomous scheduled audit triggered and queued for execution."
+                : "Job registered and queued for execution.";
+        recordEvent(runId, "STATE_CHANGE", "QUEUED", triggerMsg, null);
 
         // Asynchronously trigger execution on browser worker
         triggerWorkerExecution(run, req);

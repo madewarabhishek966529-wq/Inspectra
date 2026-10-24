@@ -2,7 +2,9 @@ package com.inspectra.controller;
 
 import com.inspectra.model.Project;
 import com.inspectra.model.TestRun;
+import com.inspectra.service.ProjectSchedulerService;
 import com.inspectra.service.ProjectService;
+import com.inspectra.service.ProjectTrendService;
 import com.inspectra.service.TestRunService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,13 +20,29 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final TestRunService testRunService;
+    private final ProjectSchedulerService projectSchedulerService;
+    private final ProjectTrendService projectTrendService;
 
-    public ProjectController(ProjectService projectService, TestRunService testRunService) {
+    public ProjectController(
+            ProjectService projectService,
+            TestRunService testRunService,
+            ProjectSchedulerService projectSchedulerService,
+            ProjectTrendService projectTrendService
+    ) {
         this.projectService = projectService;
         this.testRunService = testRunService;
+        this.projectSchedulerService = projectSchedulerService;
+        this.projectTrendService = projectTrendService;
     }
 
     public record CreateProjectRequest(String name, String description, String targetUrl, String configurationJson) {}
+
+    public record ScheduleRequest(
+            Boolean enabled,
+            String frequency,
+            String cron,
+            String configurationJson
+    ) {}
 
     @GetMapping
     public ResponseEntity<List<Project>> listProjects(@AuthenticationPrincipal UserDetails userDetails) {
@@ -91,8 +109,42 @@ public class ProjectController {
             @RequestBody TestRunService.RunRequest req
     ) {
         try {
-            TestRun run = testRunService.initiateRun(id, userDetails.getUsername(), req);
+            TestRun run = testRunService.initiateRun(id, userDetails.getUsername(), req, "MANUAL");
             return ResponseEntity.accepted().body(run);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{id}/schedule")
+    public ResponseEntity<?> configureSchedule(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable String id,
+            @RequestBody ScheduleRequest req
+    ) {
+        try {
+            Project updated = projectSchedulerService.configureProjectSchedule(
+                    id,
+                    userDetails.getUsername(),
+                    req.enabled(),
+                    req.frequency(),
+                    req.cron(),
+                    req.configurationJson()
+            );
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{id}/trends")
+    public ResponseEntity<?> getProjectTrends(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable String id
+    ) {
+        try {
+            ProjectTrendService.ProjectTrendsDto trends = projectTrendService.getProjectTrends(id, userDetails.getUsername());
+            return ResponseEntity.ok(trends);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

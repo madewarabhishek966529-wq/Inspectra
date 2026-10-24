@@ -8,8 +8,10 @@ import {
   TestResult,
   TestRun,
   User,
-  AiSettings
+  AiSettings,
+  ProjectTrends
 } from '../types';
+
 
 const API_BASE = '/api';
 
@@ -131,7 +133,25 @@ export const apiProjects = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+
+  configureSchedule: (
+    id: string,
+    data: {
+      enabled: boolean;
+      frequency: string;
+      cron?: string;
+      configurationJson?: string;
+    }
+  ): Promise<Project> =>
+    request(`/projects/${id}/schedule`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  getTrends: (id: string): Promise<ProjectTrends> =>
+    request(`/projects/${id}/trends`),
 };
+
 
 // Test Runs API
 export const apiRuns = {

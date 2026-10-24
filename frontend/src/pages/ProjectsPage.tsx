@@ -9,11 +9,19 @@ import {
   ExternalLink,
   Layers,
   Sparkles,
+  CalendarClock,
+  TrendingUp,
+  Clock,
+  Activity,
+  CheckCircle2,
+  AlertTriangle,
 } from 'lucide-react';
 import { Project, TestRun } from '../types';
 import { apiProjects, apiRuns } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { NewProjectModal } from '../components/modal/NewProjectModal';
+import { ProjectScheduleModal } from '../components/modal/ProjectScheduleModal';
+import { ProjectTrendsDrawer } from '../components/modal/ProjectTrendsDrawer';
 
 interface ProjectsPageProps {
   onOpenNewRun: (defaultUrl?: string, projectId?: string) => void;
@@ -25,6 +33,8 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenNewRun }) => {
   const [runs, setRuns] = useState<TestRun[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [schedulingProject, setSchedulingProject] = useState<Project | null>(null);
+  const [trendsProject, setTrendsProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const loadData = async () => {
@@ -58,14 +68,35 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenNewRun }) => {
     }
   };
 
+  const handleTriggerScheduledNow = async (projectId: string) => {
+    const proj = projects.find((p) => p.id === projectId);
+    if (!proj) return;
+    await apiProjects.startRun(projectId, {
+      targetUrl: proj.targetUrl,
+      allowPrivateIps: true,
+    });
+    await loadData();
+  };
+
+  // Portfolio KPI metrics
+  const totalProjects = projects.length;
+  const scheduledCount = projects.filter((p) => p.scheduleEnabled).length;
+  const completedRuns = runs.filter((r) => r.status === 'COMPLETED' && r.overallScore !== null);
+  const portfolioAvg =
+    completedRuns.length > 0
+      ? Math.round(
+          completedRuns.reduce((acc, r) => acc + (r.overallScore || 0), 0) / completedRuns.length
+        )
+      : null;
+
   return (
     <div className="space-y-6 animate-fadeIn pb-12">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Registered Projects</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Project Management & Autonomous Audits</h1>
           <p className="text-xs text-slate-400 mt-1">
-            Target applications and environments monitored by Inspectra autonomous QA.
+            Target applications, recurring cron schedules, and longitudinal quality health trends.
           </p>
         </div>
 
@@ -91,7 +122,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenNewRun }) => {
       {!isAuthenticated && (
         <div className="p-4 rounded-xl glass-panel border border-cyan-500/30 flex items-center justify-between">
           <div className="text-xs text-slate-300">
-            Sign in with demo credentials to manage custom projects and view history.
+            Sign in with demo credentials to manage custom projects, scheduling, and view health trends.
           </div>
           <button
             onClick={demoLogin}
@@ -102,14 +133,54 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenNewRun }) => {
         </div>
       )}
 
+      {/* Summary KPI Strip */}
+      {projects.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="p-4 rounded-2xl glass-panel border border-white/10 flex items-center justify-between">
+            <div>
+              <span className="text-xs text-slate-400 font-medium">Monitored Applications</span>
+              <div className="text-2xl font-bold font-mono text-white mt-0.5">{totalProjects}</div>
+            </div>
+            <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              <FolderGit2 className="w-5 h-5" />
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl glass-panel border border-white/10 flex items-center justify-between">
+            <div>
+              <span className="text-xs text-slate-400 font-medium">Autonomous Cadence Active</span>
+              <div className="text-2xl font-bold font-mono text-emerald-400 mt-0.5">
+                {scheduledCount}{' '}
+                <span className="text-xs font-normal text-slate-500">/ {totalProjects} projects</span>
+              </div>
+            </div>
+            <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <CalendarClock className="w-5 h-5" />
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl glass-panel border border-white/10 flex items-center justify-between">
+            <div>
+              <span className="text-xs text-slate-400 font-medium">Portfolio Avg Quality</span>
+              <div className="text-2xl font-bold font-mono text-cyan-300 mt-0.5">
+                {portfolioAvg !== null ? `${portfolioAvg}%` : 'N/A'}
+              </div>
+            </div>
+            <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Projects Grid */}
       {projects.length === 0 ? (
         <div className="p-12 text-center rounded-2xl glass-panel border border-white/10 text-slate-400">
           <FolderGit2 className="w-10 h-10 text-slate-600 mx-auto mb-3" />
           <div className="text-sm font-semibold text-slate-300">No projects registered yet</div>
           <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-            Create a project for your website or web application to track quality scores and audit
-            results over time.
+            Create a project for your website or web application to track quality scores, set autonomous
+            recurring cron audits, and monitor regression over time.
           </p>
           <button
             onClick={() => {
@@ -130,7 +201,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenNewRun }) => {
             return (
               <div
                 key={project.id}
-                className="rounded-2xl glass-panel border border-white/10 hover:border-cyan-500/30 p-5 flex flex-col justify-between transition-all group hover:shadow-xl hover:shadow-cyan-500/5"
+                className="rounded-2xl glass-panel border border-white/10 hover:border-cyan-500/30 p-5 flex flex-col justify-between transition-all group hover:shadow-xl hover:shadow-cyan-500/5 relative"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2">
@@ -150,29 +221,33 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenNewRun }) => {
 
                     <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
                       <button
+                        onClick={() => setSchedulingProject(project)}
+                        title="Configure Autonomous Schedule"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition-colors"
+                      >
+                        <CalendarClock className="w-3.5 h-3.5" />
+                      </button>
+                      <button
                         onClick={() => {
                           setEditingProject(project);
                           setIsModalOpen(true);
                         }}
                         title="Edit Project"
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDelete(project.id, project.name)}
                         title="Delete Project"
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
 
-                  {project.description && (
-                    <p className="text-xs text-slate-400 line-clamp-2">{project.description}</p>
-                  )}
-
+                  {/* Target URL */}
                   <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-900/60 border border-white/5 font-mono text-xs text-slate-300">
                     <Globe className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                     <a
@@ -186,17 +261,35 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenNewRun }) => {
                     <ExternalLink className="w-3 h-3 text-slate-500 shrink-0" />
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-white/5">
-                    <div className="flex items-center gap-1.5">
-                      <Layers className="w-3.5 h-3.5 text-slate-500" />
-                      <span>{projectRuns.length} runs</span>
-                    </div>
+                  {project.description && (
+                    <p className="text-xs text-slate-400 line-clamp-2">{project.description}</p>
+                  )}
+
+                  {/* Autonomous Schedule Status Pill */}
+                  <div className="flex items-center justify-between text-xs pt-1">
+                    {project.scheduleEnabled ? (
+                      <button
+                        onClick={() => setSchedulingProject(project)}
+                        className="flex items-center gap-1.5 text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span>Scheduled: {project.scheduleFrequency || 'Active'}</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setSchedulingProject(project)}
+                        className="flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-400 transition-colors"
+                      >
+                        <Clock className="w-3 h-3" />
+                        <span>Schedule: Paused</span>
+                      </button>
+                    )}
 
                     {latestRun?.overallScore !== null && latestRun?.overallScore !== undefined ? (
-                      <div className="flex items-center gap-1">
-                        <span className="text-[11px] text-slate-500">Score:</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] text-slate-500">Latest:</span>
                         <span
-                          className={`font-mono font-bold ${
+                          className={`font-mono font-bold text-xs ${
                             latestRun.overallScore >= 80
                               ? 'text-emerald-400'
                               : latestRun.overallScore >= 60
@@ -213,13 +306,19 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenNewRun }) => {
                   </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
-                  <span className="text-[10px] text-slate-500">
-                    Added {new Date(project.createdAt).toLocaleDateString()}
-                  </span>
+                {/* Footer Action Strip */}
+                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between gap-2">
+                  <button
+                    onClick={() => setTrendsProject(project)}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-cyan-300 bg-slate-900/60 border border-white/5 hover:border-cyan-500/30 transition-all"
+                  >
+                    <Activity className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Health Trends</span>
+                  </button>
+
                   <button
                     onClick={() => onOpenNewRun(project.targetUrl, project.id)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-cyan-300 bg-cyan-950/60 border border-cyan-800/60 hover:bg-cyan-900/40 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-cyan-300 bg-cyan-950/60 border border-cyan-800/60 hover:bg-cyan-900/40 transition-all active:scale-95"
                   >
                     <Play className="w-3 h-3 fill-current" />
                     <span>Run Inspection</span>
@@ -231,7 +330,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenNewRun }) => {
         </div>
       )}
 
-      {/* Modal */}
+      {/* Project Creation / Edit Modal */}
       <NewProjectModal
         isOpen={isModalOpen}
         onClose={() => {
@@ -241,6 +340,39 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenNewRun }) => {
         projectToEdit={editingProject}
         onCreated={() => loadData()}
       />
+
+      {/* Autonomous Scheduling Modal */}
+      {schedulingProject && (
+        <ProjectScheduleModal
+          isOpen={!!schedulingProject}
+          onClose={() => setSchedulingProject(null)}
+          project={schedulingProject}
+          onUpdated={(updated) => {
+            setProjects((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+            setSchedulingProject(null);
+          }}
+          onTriggerNow={handleTriggerScheduledNow}
+        />
+      )}
+
+      {/* Longitudinal Health Trends Drawer */}
+      {trendsProject && (
+        <ProjectTrendsDrawer
+          isOpen={!!trendsProject}
+          onClose={() => setTrendsProject(null)}
+          project={trendsProject}
+          onOpenSchedule={() => {
+            const p = trendsProject;
+            setTrendsProject(null);
+            setSchedulingProject(p);
+          }}
+          onRunNow={() => {
+            const p = trendsProject;
+            setTrendsProject(null);
+            onOpenNewRun(p.targetUrl, p.id);
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -34,8 +34,51 @@ export interface Project {
   description?: string;
   targetUrl: string;
   configurationJson?: string;
+  scheduleEnabled?: boolean;
+  scheduleFrequency?: string;
+  scheduleCron?: string;
+  lastScheduledRunAt?: string | null;
+  nextRunAt?: string | null;
+  alertOnCritical?: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ProjectTrendPoint {
+  runId: string;
+  timestamp: string;
+  triggerSource?: string;
+  overallScore?: number | null;
+  functionalScore?: number | null;
+  responsiveScore?: number | null;
+  accessibilityScore?: number | null;
+  seoScore?: number | null;
+  visualScore?: number | null;
+  criticalFindings: number;
+  highFindings: number;
+  mediumFindings: number;
+  lowFindings: number;
+  durationMs?: number | null;
+}
+
+export interface ProjectTrends {
+  projectId: string;
+  projectName: string;
+  targetUrl: string;
+  totalRuns: number;
+  completedRuns: number;
+  averageScore?: number | null;
+  latestScore?: number | null;
+  previousScore?: number | null;
+  scoreDelta?: number | null;
+  trendStatus: 'IMPROVING' | 'DEGRADING' | 'STABLE';
+  healthGrade: string;
+  scheduleEnabled?: boolean;
+  scheduleFrequency?: string;
+  scheduleCron?: string;
+  nextRunAt?: string | null;
+  lastScheduledRunAt?: string | null;
+  history: ProjectTrendPoint[];
 }
 
 export interface TestRun {
@@ -44,6 +87,7 @@ export interface TestRun {
   requestedBy: string;
   status: RunStatus;
   targetUrl: string;
+  triggerSource?: 'MANUAL' | 'SCHEDULED' | 'CI_CD' | string;
   scoringVersion?: string;
   overallScore?: number | null;
   metricsJson?: string | null;
@@ -52,6 +96,7 @@ export interface TestRun {
   durationMs?: number | null;
   createdAt: string;
 }
+
 
 export interface QualityMetrics {
   overallScore: number;

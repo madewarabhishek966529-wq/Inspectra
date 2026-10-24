@@ -13,8 +13,10 @@ import {
   Cpu,
   CheckCircle2,
   Clock,
+  CalendarClock,
   Terminal,
 } from 'lucide-react';
+
 import { Project, TestRun, SystemHealth } from '../types';
 import { apiProjects, apiRuns, apiSystem } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -285,11 +287,22 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenNewRun }) => {
                 {runs.slice(0, 8).map((run) => (
                   <tr key={run.id} className="hover:bg-white/[0.02] transition-colors">
                     <td className="py-3 px-4 font-mono font-medium text-cyan-400">
-                      <Link to={`/runs/${run.id}`} className="hover:underline">
-                        {run.id}
-                      </Link>
+                      <div className="flex items-center gap-1.5">
+                        <Link to={`/runs/${run.id}`} className="hover:underline">
+                          {run.id}
+                        </Link>
+                        {run.triggerSource === 'SCHEDULED' && (
+                          <span
+                            title="Triggered by autonomous cron schedule"
+                            className="p-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30"
+                          >
+                            <CalendarClock className="w-3 h-3" />
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="py-3 px-4 text-slate-200 font-mono truncate max-w-xs">
+
                       {run.targetUrl}
                     </td>
                     <td className="py-3 px-4">
