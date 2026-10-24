@@ -161,6 +161,7 @@ public class TestRunService {
                     .uri(workerBaseUrl + "/api/worker/runs/" + runId + "/events")
                     .retrieve()
                     .bodyToFlux(String.class)
+                    .publishOn(reactor.core.scheduler.Schedulers.boundedElastic())
                     .doOnNext(eventStr -> processWorkerEvent(runId, eventStr))
                     .doOnError(err -> log.warn("Worker SSE stream closed for run {}: {}", runId, err.getMessage()))
                     .doOnComplete(() -> finalizeRunResults(runId))
@@ -190,12 +191,13 @@ public class TestRunService {
             recordEvent(runId, type, step, message, details != null ? details.toString() : null);
 
             if ("COMPLETE".equals(type) || "COMPLETED".equals(step) || "FAILED".equals(step)) {
-                finalizeRunResults(runId);
+                java.util.concurrent.CompletableFuture.runAsync(() -> finalizeRunResults(runId));
             }
         } catch (Exception e) {
             log.debug("Event parse ignored: {}", e.getMessage());
         }
     }
+
 
     private synchronized void finalizeRunResults(String runId) {
         Optional<TestRun> runOpt = testRunRepository.findById(runId);
@@ -207,16 +209,32 @@ public class TestRunService {
         }
 
         try {
-            // Fetch completed report from worker
-            JsonNode statusResp = webClient.get()
-                    .uri(workerBaseUrl + "/api/worker/runs/" + runId + "/status")
-                    .retrieve()
-                    .bodyToMono(JsonNode.class)
-                    .timeout(Duration.ofSeconds(10))
-                    .block();
+            // Fetch completed report from worker with retry loop to prevent race conditions
+            JsonNode report = null;
+            for (int attempt = 0; attempt < 15; attempt++) {
+                try {
+                    JsonNode statusResp = webClient.get()
+                            .uri(workerBaseUrl + "/api/worker/runs/" + runId + "/status")
+                            .retrieve()
+                            .bodyToMono(JsonNode.class)
+                            .timeout(Duration.ofSeconds(5))
+                            .block();
 
-            if (statusResp != null && statusResp.has("report")) {
-                JsonNode report = statusResp.get("report");
+                    if (statusResp != null && statusResp.has("report") && !statusResp.get("report").isNull()) {
+                        report = statusResp.get("report");
+                        break;
+                    }
+                } catch (Exception e) {
+                    log.debug("Waiting for worker report for run {} (attempt {}): {}", runId, attempt, e.getMessage());
+                }
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignored) {}
+            }
+
+            if (report != null) {
+
 
                 // Save Discovered Pages
                 if (report.has("pagesDiscovered")) {
