@@ -1,0 +1,88 @@
+{
+  "total": 8,
+  "passed": 7,
+  "failed": 1,
+  "passRate": "87.5%",
+  "results": [
+    {
+      "category": "Page Load",
+      "name": "Initial navigation to http://localhost:5173",
+      "passed": true,
+      "status": 200,
+      "loadTimeMs": 3651
+    },
+    {
+      "category": "Metadata",
+      "name": "HTML Title tag present and non-empty",
+      "passed": true,
+      "title": "DevInsights — Developer Activity Analytics & Visualization Platform"
+    },
+    {
+      "category": "UI Components",
+      "name": "Developer search input field visible",
+      "passed": true
+    },
+    {
+      "category": "Search Flow",
+      "name": "Search for \"octocat\" renders developer profile data",
+      "passed": true,
+      "snippetLength": 4147
+    },
+    {
+      "category": "Accessibility",
+      "name": "Zero critical/serious WCAG violations",
+      "passed": false,
+      "totalViolations": 4,
+      "criticalCount": 3,
+      "violations": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "description": "Ensure buttons have discernible text",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/button-name?application=axeAPI",
+          "nodesCount": 2
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+          "nodesCount": 14
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "description": "Ensure the order of headings is semantically correct",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/heading-order?application=axeAPI",
+          "nodesCount": 1
+        },
+        {
+          "id": "select-name",
+          "impact": "critical",
+          "description": "Ensure select element has an accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/select-name?application=axeAPI",
+          "nodesCount": 2
+        }
+      ]
+    },
+    {
+      "category": "Responsive",
+      "name": "Mobile (390x844) viewport has no horizontal overflow",
+      "passed": true,
+      "scrollWidth": 390,
+      "innerWidth": 390
+    },
+    {
+      "category": "Responsive",
+      "name": "Tablet (768x1024) viewport has no horizontal overflow",
+      "passed": true
+    },
+    {
+      "category": "Console Stability",
+      "name": "Zero uncaught JavaScript console errors",
+      "passed": true,
+      "errors": [],
+      "consoleLogsCount": 3
+    }
+  ]
+}

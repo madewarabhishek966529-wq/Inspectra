@@ -1,0 +1,466 @@
+{
+  "timestamp": "2026-10-24T15:07:29.507Z",
+  "total": 30,
+  "passed": 27,
+  "failed": 3,
+  "passRate": "90.0%",
+  "results": [
+    {
+      "suite": "System Health",
+      "testName": "GET /api/health returns 200 OK",
+      "expected": "200 OK",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 584,
+      "response": {
+        "status": "healthy",
+        "service": "DevInsights",
+        "version": "1.0.0",
+        "environment": "development",
+        "github_api": {
+          "rate_limit": 60,
+          "rate_limit_remaining": 13,
+          "authenticated": false
+        },
+        "cache": {
+          "total_items": 25,
+          "hits": 151,
+          "misses": 38,
+          "hit_ratio": 0.798941798941799
+        }
+      }
+    },
+    {
+      "suite": "Root",
+      "testName": "GET / returns 200 or 404",
+      "expected": "200 or 404",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 4,
+      "response": {
+        "platform": "DevInsights",
+        "tagline": "Understand Your Code. Visualize Your Growth.",
+        "version": "1.0.0",
+        "docs_url": "/docs",
+        "health_check": "/api/health"
+      }
+    },
+    {
+      "suite": "Security & Headers",
+      "testName": "CORS headers configured",
+      "expected": "Header present",
+      "actual": "Missing",
+      "passed": false,
+      "headers": {
+        "date": "Sat, 24 Oct 2026 15:07:26 GMT",
+        "server": "uvicorn",
+        "content-length": "249",
+        "content-type": "application/json",
+        "vary": "Origin"
+      }
+    },
+    {
+      "suite": "Security & Headers",
+      "testName": "X-Content-Type-Options: nosniff",
+      "expected": "nosniff",
+      "actual": "Missing",
+      "passed": false,
+      "note": "Protects against MIME sniffing vulnerabilities"
+    },
+    {
+      "suite": "Security & Headers",
+      "testName": "X-Frame-Options configured",
+      "expected": "DENY or SAMEORIGIN",
+      "actual": "Missing",
+      "passed": false,
+      "note": "Protects against clickjacking"
+    },
+    {
+      "suite": "Preferences",
+      "testName": "GET /api/preferences returns 200",
+      "expected": "200 OK",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 14,
+      "body": {
+        "user_key": "default",
+        "theme": "dark",
+        "layout_mode": "comfort",
+        "visible_widgets": [
+          "metrics",
+          "heatmap",
+          "languages",
+          "activity",
+          "repositories",
+          "health",
+          "insights"
+        ],
+        "widget_order": [
+          "metrics",
+          "heatmap",
+          "languages",
+          "activity",
+          "repositories",
+          "health",
+          "insights"
+        ],
+        "pinned_developers": [
+          "torvalds",
+          "gaearon",
+          "shadcn"
+        ],
+        "updated_at": "2026-10-22 18:56 UTC"
+      }
+    },
+    {
+      "suite": "Preferences",
+      "testName": "POST /api/preferences saves preferences",
+      "expected": "200 OK",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 22,
+      "body": {
+        "user_key": "default",
+        "theme": "dark",
+        "layout_mode": "comfort",
+        "visible_widgets": [
+          "metrics",
+          "heatmap",
+          "languages",
+          "activity",
+          "repositories",
+          "health",
+          "insights"
+        ],
+        "widget_order": [
+          "metrics",
+          "heatmap",
+          "languages",
+          "activity",
+          "repositories",
+          "health",
+          "insights"
+        ],
+        "pinned_developers": [
+          "torvalds",
+          "gaearon",
+          "shadcn"
+        ],
+        "updated_at": "2026-10-22 18:56 UTC"
+      }
+    },
+    {
+      "suite": "Preferences",
+      "testName": "GET /api/preferences verifies persistence",
+      "expected": "theme == dark",
+      "actual": "dark",
+      "passed": true,
+      "persisted": {
+        "user_key": "default",
+        "theme": "dark",
+        "layout_mode": "comfort",
+        "visible_widgets": [
+          "metrics",
+          "heatmap",
+          "languages",
+          "activity",
+          "repositories",
+          "health",
+          "insights"
+        ],
+        "widget_order": [
+          "metrics",
+          "heatmap",
+          "languages",
+          "activity",
+          "repositories",
+          "health",
+          "insights"
+        ],
+        "pinned_developers": [
+          "torvalds",
+          "gaearon",
+          "shadcn"
+        ],
+        "updated_at": "2026-10-22 18:56 UTC"
+      }
+    },
+    {
+      "suite": "Developer Endpoints",
+      "testName": "GET /api/developers/octocat/overview",
+      "expected": "200 OK",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 4,
+      "isObj": true
+    },
+    {
+      "suite": "Developer Endpoints",
+      "testName": "GET /api/developers/octocat/repositories",
+      "expected": "200 OK",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 6,
+      "isObj": true
+    },
+    {
+      "suite": "Developer Endpoints",
+      "testName": "GET /api/developers/octocat/languages",
+      "expected": "200 OK",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 2,
+      "isObj": true
+    },
+    {
+      "suite": "Developer Endpoints",
+      "testName": "GET /api/developers/octocat/activity",
+      "expected": "200 OK",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 2,
+      "isObj": true
+    },
+    {
+      "suite": "Developer Endpoints",
+      "testName": "GET /api/developers/octocat/contributions",
+      "expected": "200 OK",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 9,
+      "isObj": true
+    },
+    {
+      "suite": "Developer Endpoints",
+      "testName": "GET /api/developers/octocat/portfolio-audit",
+      "expected": "200 OK",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 2,
+      "isObj": true
+    },
+    {
+      "suite": "Developer Endpoints",
+      "testName": "GET /api/developers/octocat/insights",
+      "expected": "200 OK",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 2,
+      "isObj": true
+    },
+    {
+      "suite": "Repository Health",
+      "testName": "GET /api/repositories/octocat/Hello-World/health",
+      "expected": "200 OK",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 2,
+      "body": {
+        "repo_name": "Hello-World",
+        "overall_score": 47,
+        "grade": "F",
+        "maintenance_score": 4,
+        "documentation_score": 8,
+        "issue_score": 12,
+        "community_score": 15,
+        "release_score": 8,
+        "reasons": [
+          "Stale codebase: no commits in over 794 days.",
+          "Contains a clear repository description.",
+          "Large backlog of 7479 open issues.",
+          "Strong community adoption (3861 stars).",
+          "Substantial external forks (7180 forks)."
+        ],
+        "suggestions": [
+          "Perform maintenance updates or tag a stable archive release.",
+          "Add an open-source license (e.g., MIT, Apache 2.0) to clarify reuse terms.",
+          "Add GitHub topics/tags to improve project discoverability.",
+          "Add a live demo or documentation URL in repository settings.",
+          "Triage older issues and apply milestone or stale bot labels."
+        ],
+        "disclaimer": "DevInsights Repository Health is an algorithmic, rules-based diagnostic score calculated from public maintenance indicators, documentation checks, and issue activity. It is not an official GitHub rating or a definitive measure of software quality."
+      }
+    },
+    {
+      "suite": "Developer Compare",
+      "testName": "GET /api/developers/compare (2 valid usernames)",
+      "expected": "200 OK",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 8,
+      "count": 4
+    },
+    {
+      "suite": "Snapshots",
+      "testName": "POST /api/snapshots/octocat creates snapshot",
+      "expected": "200 or 201",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 39,
+      "body": {
+        "id": 13,
+        "username": "octocat",
+        "captured_at": "2026-10-24 15:07 UTC",
+        "followers": 24737,
+        "public_repos": 8,
+        "total_stars": 28149,
+        "total_forks": 169933,
+        "health_score": 54,
+        "audit_score": 84,
+        "note": "QA Regression Test Snapshot"
+      }
+    },
+    {
+      "suite": "Snapshots",
+      "testName": "GET /api/snapshots/octocat retrieves snapshots list",
+      "expected": "200 OK with list",
+      "actual": "200",
+      "passed": true,
+      "durationMs": 4,
+      "body": [
+        {
+          "id": 13,
+          "username": "octocat",
+          "captured_at": "2026-10-24 15:07 UTC",
+          "followers": 24737,
+          "public_repos": 8,
+          "total_stars": 28149,
+          "total_forks": 169933,
+          "health_score": 54,
+          "audit_score": 84,
+          "note": "QA Regression Test Snapshot"
+        }
+      ]
+    },
+    {
+      "suite": "Snapshots",
+      "testName": "POST /api/snapshots with path/body username mismatch",
+      "expected": "Handled gracefully (200, 400 or 422)",
+      "actual": "200",
+      "passed": true,
+      "durationMs": 15,
+      "body": {
+        "id": 14,
+        "username": "octocat",
+        "captured_at": "2026-10-24 15:07 UTC",
+        "followers": 24737,
+        "public_repos": 8,
+        "total_stars": 28149,
+        "total_forks": 169933,
+        "health_score": 54,
+        "audit_score": 84,
+        "note": "Mismatch test"
+      }
+    },
+    {
+      "suite": "Reports Export",
+      "testName": "POST /api/reports/export with valid JSON request",
+      "expected": "200 OK",
+      "actual": 200,
+      "passed": true,
+      "durationMs": 5,
+      "contentType": "application/json"
+    },
+    {
+      "suite": "Negative Testing",
+      "testName": "GET overview for non-existent user returns 404",
+      "expected": "404 Not Found",
+      "actual": "404",
+      "passed": true,
+      "durationMs": 615,
+      "body": {
+        "detail": "Requested GitHub resource '/users/this-user-definitely-does-not-exist-xyz9999' was not found."
+      }
+    },
+    {
+      "suite": "Negative Testing",
+      "testName": "Compare with only 1 user returns 400 or 422",
+      "expected": "400 or 422",
+      "actual": "400",
+      "passed": true,
+      "durationMs": 3,
+      "body": {
+        "detail": "Please provide at least 2 GitHub usernames to compare."
+      }
+    },
+    {
+      "suite": "Negative Testing",
+      "testName": "Compare with > 4 users returns 400 or 422",
+      "expected": "400 or 422",
+      "actual": "400",
+      "passed": true,
+      "durationMs": 1,
+      "body": {
+        "detail": "A maximum of 4 developers can be compared simultaneously."
+      }
+    },
+    {
+      "suite": "Negative Testing",
+      "testName": "Malformed JSON payload returns 400 or 422",
+      "expected": "400 or 422",
+      "actual": "422",
+      "passed": true,
+      "durationMs": 2
+    },
+    {
+      "suite": "Negative Testing",
+      "testName": "DELETE /api/health returns 405 Method Not Allowed",
+      "expected": "405",
+      "actual": "405",
+      "passed": true,
+      "durationMs": 2
+    },
+    {
+      "suite": "Security Tests",
+      "testName": "Path traversal in {username} blocked",
+      "expected": "400/404/422",
+      "actual": "404",
+      "passed": true,
+      "durationMs": 2,
+      "note": "Must not expose filesystem or cause 500 error"
+    },
+    {
+      "suite": "Security Tests",
+      "testName": "SQL Injection in {username} handled safely",
+      "expected": "400/404/422 (Not 500)",
+      "actual": "404",
+      "passed": true,
+      "durationMs": 734,
+      "body": {
+        "detail": "Requested GitHub resource '/users/octocat' OR '1'='1' was not found."
+      }
+    },
+    {
+      "suite": "Security Tests",
+      "testName": "XSS payload in snapshot label stored/sanitized without 500",
+      "expected": "200 or 400 (Not 500)",
+      "actual": "422",
+      "passed": true,
+      "durationMs": 8,
+      "body": {
+        "detail": [
+          {
+            "type": "missing",
+            "loc": [
+              "body",
+              "username"
+            ],
+            "msg": "Field required",
+            "input": {
+              "label": "<script>alert(\"xss\")</script>",
+              "metrics": {}
+            }
+          }
+        ]
+      }
+    },
+    {
+      "suite": "Security Tests",
+      "testName": "Oversized parameter handled without server crash",
+      "expected": "400/404/414/422 (Not 500)",
+      "actual": "404",
+      "passed": true,
+      "durationMs": 605
+    }
+  ]
+}

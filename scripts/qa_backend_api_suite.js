@@ -203,8 +203,8 @@ async function runAllTests() {
   // 7. Developer Snapshot Lifecycle
   try {
     const postRes = await request({ path: '/api/snapshots/octocat', method: 'POST' }, {
-      label: 'QA Regression Test Snapshot',
-      metrics: { score: 95 }
+      username: 'octocat',
+      note: 'QA Regression Test Snapshot'
     });
     record('Snapshots', 'POST /api/snapshots/octocat creates snapshot', '200 or 201', postRes.statusCode, postRes.statusCode === 200 || postRes.statusCode === 201, {
       durationMs: postRes.durationMs,
@@ -216,6 +216,16 @@ async function runAllTests() {
     record('Snapshots', 'GET /api/snapshots/octocat retrieves snapshots list', '200 OK with list', `${getRes.statusCode}`, getRes.statusCode === 200 && !!hasSnapshots, {
       durationMs: getRes.durationMs,
       body: getRes.body
+    });
+
+    // 7b. Path username vs body username mismatch edge case
+    const mismatchRes = await request({ path: '/api/snapshots/octocat', method: 'POST' }, {
+      username: 'torvalds',
+      note: 'Mismatch test'
+    });
+    record('Snapshots', 'POST /api/snapshots with path/body username mismatch', 'Handled gracefully (200, 400 or 422)', `${mismatchRes.statusCode}`, mismatchRes.statusCode !== 500, {
+      durationMs: mismatchRes.durationMs,
+      body: mismatchRes.body
     });
   } catch (err) {
     record('Snapshots', 'Developer Snapshot Lifecycle', 'Success', err.message, false);
