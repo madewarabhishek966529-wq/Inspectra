@@ -108,10 +108,11 @@ public class TestRunService {
         recordEvent(runId, "STATE_CHANGE", "QUEUED", triggerMsg, null);
 
         // Asynchronously trigger execution on browser worker
-        triggerWorkerExecution(run, req);
+        java.util.concurrent.CompletableFuture.runAsync(() -> triggerWorkerExecution(run, req));
 
         return run;
     }
+
 
     @Async
     public void triggerWorkerExecution(TestRun run, RunRequest req) {

@@ -1,0 +1,1590 @@
+﻿{
+    "openapi":  "3.1.0",
+    "info":  {
+                 "title":  "DevInsights",
+                 "description":  "Developer Activity Analytics \u0026 Visualization Platform API. Understand Your Code. Visualize Your Growth.",
+                 "version":  "1.0.0"
+             },
+    "paths":  {
+                  "/api/health":  {
+                                      "get":  {
+                                                  "tags":  [
+                                                               "System Health"
+                                                           ],
+                                                  "summary":  "Health Check",
+                                                  "operationId":  "health_check_api_health_get",
+                                                  "responses":  {
+                                                                    "200":  {
+                                                                                "description":  "Successful Response",
+                                                                                "content":  {
+                                                                                                "application/json":  "@{schema=}"
+                                                                                            }
+                                                                            }
+                                                                }
+                                              }
+                                  },
+                  "/api/developers/compare":  {
+                                                  "get":  {
+                                                              "tags":  [
+                                                                           "Compare"
+                                                                       ],
+                                                              "summary":  "Compare Developers",
+                                                              "operationId":  "compare_developers_api_developers_compare_get",
+                                                              "parameters":  [
+                                                                                 {
+                                                                                     "name":  "usernames",
+                                                                                     "in":  "query",
+                                                                                     "required":  true,
+                                                                                     "schema":  {
+                                                                                                    "type":  "string",
+                                                                                                    "description":  "Comma-separated list of 2 to 4 GitHub usernames",
+                                                                                                    "title":  "Usernames"
+                                                                                                },
+                                                                                     "description":  "Comma-separated list of 2 to 4 GitHub usernames"
+                                                                                 }
+                                                                             ],
+                                                              "responses":  {
+                                                                                "200":  {
+                                                                                            "description":  "Successful Response",
+                                                                                            "content":  {
+                                                                                                            "application/json":  "@{schema=}"
+                                                                                                        }
+                                                                                        },
+                                                                                "422":  {
+                                                                                            "description":  "Validation Error",
+                                                                                            "content":  {
+                                                                                                            "application/json":  "@{schema=}"
+                                                                                                        }
+                                                                                        }
+                                                                            }
+                                                          }
+                                              },
+                  "/api/developers/{username}/overview":  {
+                                                              "get":  {
+                                                                          "tags":  [
+                                                                                       "Developers"
+                                                                                   ],
+                                                                          "summary":  "Get Developer Overview",
+                                                                          "operationId":  "get_developer_overview_api_developers__username__overview_get",
+                                                                          "parameters":  [
+                                                                                             {
+                                                                                                 "name":  "username",
+                                                                                                 "in":  "path",
+                                                                                                 "required":  true,
+                                                                                                 "schema":  {
+                                                                                                                "type":  "string",
+                                                                                                                "title":  "Username"
+                                                                                                            }
+                                                                                             }
+                                                                                         ],
+                                                                          "responses":  {
+                                                                                            "200":  {
+                                                                                                        "description":  "Successful Response",
+                                                                                                        "content":  {
+                                                                                                                        "application/json":  "@{schema=}"
+                                                                                                                    }
+                                                                                                    },
+                                                                                            "422":  {
+                                                                                                        "description":  "Validation Error",
+                                                                                                        "content":  {
+                                                                                                                        "application/json":  "@{schema=}"
+                                                                                                                    }
+                                                                                                    }
+                                                                                        }
+                                                                      }
+                                                          },
+                  "/api/developers/{username}/repositories":  {
+                                                                  "get":  {
+                                                                              "tags":  [
+                                                                                           "Developers"
+                                                                                       ],
+                                                                              "summary":  "Get Developer Repositories",
+                                                                              "operationId":  "get_developer_repositories_api_developers__username__repositories_get",
+                                                                              "parameters":  [
+                                                                                                 {
+                                                                                                     "name":  "username",
+                                                                                                     "in":  "path",
+                                                                                                     "required":  true,
+                                                                                                     "schema":  {
+                                                                                                                    "type":  "string",
+                                                                                                                    "title":  "Username"
+                                                                                                                }
+                                                                                                 },
+                                                                                                 {
+                                                                                                     "name":  "sort",
+                                                                                                     "in":  "query",
+                                                                                                     "required":  false,
+                                                                                                     "schema":  {
+                                                                                                                    "type":  "string",
+                                                                                                                    "pattern":  "^(updated|stars|forks|size|name)$",
+                                                                                                                    "default":  "updated",
+                                                                                                                    "title":  "Sort"
+                                                                                                                }
+                                                                                                 },
+                                                                                                 {
+                                                                                                     "name":  "order",
+                                                                                                     "in":  "query",
+                                                                                                     "required":  false,
+                                                                                                     "schema":  {
+                                                                                                                    "type":  "string",
+                                                                                                                    "pattern":  "^(asc|desc)$",
+                                                                                                                    "default":  "desc",
+                                                                                                                    "title":  "Order"
+                                                                                                                }
+                                                                                                 },
+                                                                                                 {
+                                                                                                     "name":  "language",
+                                                                                                     "in":  "query",
+                                                                                                     "required":  false,
+                                                                                                     "schema":  {
+                                                                                                                    "anyOf":  " ",
+                                                                                                                    "title":  "Language"
+                                                                                                                }
+                                                                                                 },
+                                                                                                 {
+                                                                                                     "name":  "include_forks",
+                                                                                                     "in":  "query",
+                                                                                                     "required":  false,
+                                                                                                     "schema":  {
+                                                                                                                    "type":  "boolean",
+                                                                                                                    "default":  true,
+                                                                                                                    "title":  "Include Forks"
+                                                                                                                }
+                                                                                                 },
+                                                                                                 {
+                                                                                                     "name":  "limit",
+                                                                                                     "in":  "query",
+                                                                                                     "required":  false,
+                                                                                                     "schema":  {
+                                                                                                                    "type":  "integer",
+                                                                                                                    "maximum":  100,
+                                                                                                                    "minimum":  1,
+                                                                                                                    "default":  100,
+                                                                                                                    "title":  "Limit"
+                                                                                                                }
+                                                                                                 }
+                                                                                             ],
+                                                                              "responses":  {
+                                                                                                "200":  {
+                                                                                                            "description":  "Successful Response",
+                                                                                                            "content":  {
+                                                                                                                            "application/json":  "@{schema=}"
+                                                                                                                        }
+                                                                                                        },
+                                                                                                "422":  {
+                                                                                                            "description":  "Validation Error",
+                                                                                                            "content":  {
+                                                                                                                            "application/json":  "@{schema=}"
+                                                                                                                        }
+                                                                                                        }
+                                                                                            }
+                                                                          }
+                                                              },
+                  "/api/developers/{username}/languages":  {
+                                                               "get":  {
+                                                                           "tags":  [
+                                                                                        "Developers"
+                                                                                    ],
+                                                                           "summary":  "Get Developer Languages",
+                                                                           "operationId":  "get_developer_languages_api_developers__username__languages_get",
+                                                                           "parameters":  [
+                                                                                              {
+                                                                                                  "name":  "username",
+                                                                                                  "in":  "path",
+                                                                                                  "required":  true,
+                                                                                                  "schema":  {
+                                                                                                                 "type":  "string",
+                                                                                                                 "title":  "Username"
+                                                                                                             }
+                                                                                              }
+                                                                                          ],
+                                                                           "responses":  {
+                                                                                             "200":  {
+                                                                                                         "description":  "Successful Response",
+                                                                                                         "content":  {
+                                                                                                                         "application/json":  "@{schema=}"
+                                                                                                                     }
+                                                                                                     },
+                                                                                             "422":  {
+                                                                                                         "description":  "Validation Error",
+                                                                                                         "content":  {
+                                                                                                                         "application/json":  "@{schema=}"
+                                                                                                                     }
+                                                                                                     }
+                                                                                         }
+                                                                       }
+                                                           },
+                  "/api/developers/{username}/activity":  {
+                                                              "get":  {
+                                                                          "tags":  [
+                                                                                       "Developers"
+                                                                                   ],
+                                                                          "summary":  "Get Developer Activity",
+                                                                          "operationId":  "get_developer_activity_api_developers__username__activity_get",
+                                                                          "parameters":  [
+                                                                                             {
+                                                                                                 "name":  "username",
+                                                                                                 "in":  "path",
+                                                                                                 "required":  true,
+                                                                                                 "schema":  {
+                                                                                                                "type":  "string",
+                                                                                                                "title":  "Username"
+                                                                                                            }
+                                                                                             }
+                                                                                         ],
+                                                                          "responses":  {
+                                                                                            "200":  {
+                                                                                                        "description":  "Successful Response",
+                                                                                                        "content":  {
+                                                                                                                        "application/json":  "@{schema=}"
+                                                                                                                    }
+                                                                                                    },
+                                                                                            "422":  {
+                                                                                                        "description":  "Validation Error",
+                                                                                                        "content":  {
+                                                                                                                        "application/json":  "@{schema=}"
+                                                                                                                    }
+                                                                                                    }
+                                                                                        }
+                                                                      }
+                                                          },
+                  "/api/developers/{username}/contributions":  {
+                                                                   "get":  {
+                                                                               "tags":  [
+                                                                                            "Developers"
+                                                                                        ],
+                                                                               "summary":  "Get Developer Contributions",
+                                                                               "operationId":  "get_developer_contributions_api_developers__username__contributions_get",
+                                                                               "parameters":  [
+                                                                                                  {
+                                                                                                      "name":  "username",
+                                                                                                      "in":  "path",
+                                                                                                      "required":  true,
+                                                                                                      "schema":  {
+                                                                                                                     "type":  "string",
+                                                                                                                     "title":  "Username"
+                                                                                                                 }
+                                                                                                  },
+                                                                                                  {
+                                                                                                      "name":  "year",
+                                                                                                      "in":  "query",
+                                                                                                      "required":  false,
+                                                                                                      "schema":  {
+                                                                                                                     "anyOf":  " ",
+                                                                                                                     "title":  "Year"
+                                                                                                                 }
+                                                                                                  }
+                                                                                              ],
+                                                                               "responses":  {
+                                                                                                 "200":  {
+                                                                                                             "description":  "Successful Response",
+                                                                                                             "content":  {
+                                                                                                                             "application/json":  "@{schema=}"
+                                                                                                                         }
+                                                                                                         },
+                                                                                                 "422":  {
+                                                                                                             "description":  "Validation Error",
+                                                                                                             "content":  {
+                                                                                                                             "application/json":  "@{schema=}"
+                                                                                                                         }
+                                                                                                         }
+                                                                                             }
+                                                                           }
+                                                               },
+                  "/api/developers/{username}/portfolio-audit":  {
+                                                                     "get":  {
+                                                                                 "tags":  [
+                                                                                              "Developers"
+                                                                                          ],
+                                                                                 "summary":  "Get Developer Portfolio Audit",
+                                                                                 "operationId":  "get_developer_portfolio_audit_api_developers__username__portfolio_audit_get",
+                                                                                 "parameters":  [
+                                                                                                    {
+                                                                                                        "name":  "username",
+                                                                                                        "in":  "path",
+                                                                                                        "required":  true,
+                                                                                                        "schema":  {
+                                                                                                                       "type":  "string",
+                                                                                                                       "title":  "Username"
+                                                                                                                   }
+                                                                                                    }
+                                                                                                ],
+                                                                                 "responses":  {
+                                                                                                   "200":  {
+                                                                                                               "description":  "Successful Response",
+                                                                                                               "content":  {
+                                                                                                                               "application/json":  "@{schema=}"
+                                                                                                                           }
+                                                                                                           },
+                                                                                                   "422":  {
+                                                                                                               "description":  "Validation Error",
+                                                                                                               "content":  {
+                                                                                                                               "application/json":  "@{schema=}"
+                                                                                                                           }
+                                                                                                           }
+                                                                                               }
+                                                                             }
+                                                                 },
+                  "/api/developers/{username}/insights":  {
+                                                              "get":  {
+                                                                          "tags":  [
+                                                                                       "Developers"
+                                                                                   ],
+                                                                          "summary":  "Get Developer Insights",
+                                                                          "operationId":  "get_developer_insights_api_developers__username__insights_get",
+                                                                          "parameters":  [
+                                                                                             {
+                                                                                                 "name":  "username",
+                                                                                                 "in":  "path",
+                                                                                                 "required":  true,
+                                                                                                 "schema":  {
+                                                                                                                "type":  "string",
+                                                                                                                "title":  "Username"
+                                                                                                            }
+                                                                                             }
+                                                                                         ],
+                                                                          "responses":  {
+                                                                                            "200":  {
+                                                                                                        "description":  "Successful Response",
+                                                                                                        "content":  {
+                                                                                                                        "application/json":  "@{schema=}"
+                                                                                                                    }
+                                                                                                    },
+                                                                                            "422":  {
+                                                                                                        "description":  "Validation Error",
+                                                                                                        "content":  {
+                                                                                                                        "application/json":  "@{schema=}"
+                                                                                                                    }
+                                                                                                    }
+                                                                                        }
+                                                                      }
+                                                          },
+                  "/api/repositories/{owner}/{repo}/health":  {
+                                                                  "get":  {
+                                                                              "tags":  [
+                                                                                           "Repositories"
+                                                                                       ],
+                                                                              "summary":  "Get Repository Health",
+                                                                              "operationId":  "get_repository_health_api_repositories__owner___repo__health_get",
+                                                                              "parameters":  [
+                                                                                                 {
+                                                                                                     "name":  "owner",
+                                                                                                     "in":  "path",
+                                                                                                     "required":  true,
+                                                                                                     "schema":  {
+                                                                                                                    "type":  "string",
+                                                                                                                    "title":  "Owner"
+                                                                                                                }
+                                                                                                 },
+                                                                                                 {
+                                                                                                     "name":  "repo",
+                                                                                                     "in":  "path",
+                                                                                                     "required":  true,
+                                                                                                     "schema":  {
+                                                                                                                    "type":  "string",
+                                                                                                                    "title":  "Repo"
+                                                                                                                }
+                                                                                                 }
+                                                                                             ],
+                                                                              "responses":  {
+                                                                                                "200":  {
+                                                                                                            "description":  "Successful Response",
+                                                                                                            "content":  {
+                                                                                                                            "application/json":  "@{schema=}"
+                                                                                                                        }
+                                                                                                        },
+                                                                                                "422":  {
+                                                                                                            "description":  "Validation Error",
+                                                                                                            "content":  {
+                                                                                                                            "application/json":  "@{schema=}"
+                                                                                                                        }
+                                                                                                        }
+                                                                                            }
+                                                                          }
+                                                              },
+                  "/api/snapshots/{username}":  {
+                                                    "get":  {
+                                                                "tags":  [
+                                                                             "Snapshots \u0026 Growth"
+                                                                         ],
+                                                                "summary":  "Get Developer Snapshots",
+                                                                "operationId":  "get_developer_snapshots_api_snapshots__username__get",
+                                                                "parameters":  [
+                                                                                   {
+                                                                                       "name":  "username",
+                                                                                       "in":  "path",
+                                                                                       "required":  true,
+                                                                                       "schema":  {
+                                                                                                      "type":  "string",
+                                                                                                      "title":  "Username"
+                                                                                                  }
+                                                                                   }
+                                                                               ],
+                                                                "responses":  {
+                                                                                  "200":  {
+                                                                                              "description":  "Successful Response",
+                                                                                              "content":  {
+                                                                                                              "application/json":  "@{schema=}"
+                                                                                                          }
+                                                                                          },
+                                                                                  "422":  {
+                                                                                              "description":  "Validation Error",
+                                                                                              "content":  {
+                                                                                                              "application/json":  "@{schema=}"
+                                                                                                          }
+                                                                                          }
+                                                                              }
+                                                            },
+                                                    "post":  {
+                                                                 "tags":  [
+                                                                              "Snapshots \u0026 Growth"
+                                                                          ],
+                                                                 "summary":  "Create Developer Snapshot",
+                                                                 "operationId":  "create_developer_snapshot_api_snapshots__username__post",
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "username",
+                                                                                        "in":  "path",
+                                                                                        "required":  true,
+                                                                                        "schema":  {
+                                                                                                       "type":  "string",
+                                                                                                       "title":  "Username"
+                                                                                                   }
+                                                                                    }
+                                                                                ],
+                                                                 "requestBody":  {
+                                                                                     "required":  true,
+                                                                                     "content":  {
+                                                                                                     "application/json":  {
+                                                                                                                              "schema":  "@{$ref=#/components/schemas/SnapshotCreate}"
+                                                                                                                          }
+                                                                                                 }
+                                                                                 },
+                                                                 "responses":  {
+                                                                                   "200":  {
+                                                                                               "description":  "Successful Response",
+                                                                                               "content":  {
+                                                                                                               "application/json":  "@{schema=}"
+                                                                                                           }
+                                                                                           },
+                                                                                   "422":  {
+                                                                                               "description":  "Validation Error",
+                                                                                               "content":  {
+                                                                                                               "application/json":  "@{schema=}"
+                                                                                                           }
+                                                                                           }
+                                                                               }
+                                                             }
+                                                },
+                  "/api/preferences":  {
+                                           "get":  {
+                                                       "tags":  [
+                                                                    "Preferences \u0026 Layout"
+                                                                ],
+                                                       "summary":  "Get User Preferences",
+                                                       "operationId":  "get_user_preferences_api_preferences_get",
+                                                       "parameters":  [
+                                                                          {
+                                                                              "name":  "user_key",
+                                                                              "in":  "query",
+                                                                              "required":  false,
+                                                                              "schema":  {
+                                                                                             "type":  "string",
+                                                                                             "default":  "default",
+                                                                                             "title":  "User Key"
+                                                                                         }
+                                                                          }
+                                                                      ],
+                                                       "responses":  {
+                                                                         "200":  {
+                                                                                     "description":  "Successful Response",
+                                                                                     "content":  {
+                                                                                                     "application/json":  "@{schema=}"
+                                                                                                 }
+                                                                                 },
+                                                                         "422":  {
+                                                                                     "description":  "Validation Error",
+                                                                                     "content":  {
+                                                                                                     "application/json":  "@{schema=}"
+                                                                                                 }
+                                                                                 }
+                                                                     }
+                                                   },
+                                           "post":  {
+                                                        "tags":  [
+                                                                     "Preferences \u0026 Layout"
+                                                                 ],
+                                                        "summary":  "Update User Preferences",
+                                                        "operationId":  "update_user_preferences_api_preferences_post",
+                                                        "parameters":  [
+                                                                           {
+                                                                               "name":  "user_key",
+                                                                               "in":  "query",
+                                                                               "required":  false,
+                                                                               "schema":  {
+                                                                                              "type":  "string",
+                                                                                              "default":  "default",
+                                                                                              "title":  "User Key"
+                                                                                          }
+                                                                           }
+                                                                       ],
+                                                        "requestBody":  {
+                                                                            "required":  true,
+                                                                            "content":  {
+                                                                                            "application/json":  {
+                                                                                                                     "schema":  "@{$ref=#/components/schemas/UserPreferenceUpdate}"
+                                                                                                                 }
+                                                                                        }
+                                                                        },
+                                                        "responses":  {
+                                                                          "200":  {
+                                                                                      "description":  "Successful Response",
+                                                                                      "content":  {
+                                                                                                      "application/json":  "@{schema=}"
+                                                                                                  }
+                                                                                  },
+                                                                          "422":  {
+                                                                                      "description":  "Validation Error",
+                                                                                      "content":  {
+                                                                                                      "application/json":  "@{schema=}"
+                                                                                                  }
+                                                                                  }
+                                                                      }
+                                                    }
+                                       },
+                  "/api/reports/export":  {
+                                              "post":  {
+                                                           "tags":  [
+                                                                        "Reports \u0026 Export"
+                                                                    ],
+                                                           "summary":  "Export Developer Report",
+                                                           "operationId":  "export_developer_report_api_reports_export_post",
+                                                           "requestBody":  {
+                                                                               "content":  {
+                                                                                               "application/json":  {
+                                                                                                                        "schema":  "@{$ref=#/components/schemas/ExportRequest}"
+                                                                                                                    }
+                                                                                           },
+                                                                               "required":  true
+                                                                           },
+                                                           "responses":  {
+                                                                             "200":  {
+                                                                                         "description":  "Successful Response",
+                                                                                         "content":  {
+                                                                                                         "application/json":  "@{schema=}"
+                                                                                                     }
+                                                                                     },
+                                                                             "422":  {
+                                                                                         "description":  "Validation Error",
+                                                                                         "content":  {
+                                                                                                         "application/json":  "@{schema=}"
+                                                                                                     }
+                                                                                     }
+                                                                         }
+                                                       }
+                                          },
+                  "/":  {
+                            "get":  {
+                                        "summary":  "Root",
+                                        "operationId":  "root__get",
+                                        "responses":  {
+                                                          "200":  {
+                                                                      "description":  "Successful Response",
+                                                                      "content":  {
+                                                                                      "application/json":  "@{schema=}"
+                                                                                  }
+                                                                  }
+                                                      }
+                                    }
+                        }
+              },
+    "components":  {
+                       "schemas":  {
+                                       "ActivityAnalytics":  {
+                                                                 "properties":  {
+                                                                                    "by_day_of_week":  {
+                                                                                                           "additionalProperties":  {
+                                                                                                                                        "type":  "integer"
+                                                                                                                                    },
+                                                                                                           "type":  "object",
+                                                                                                           "title":  "By Day Of Week"
+                                                                                                       },
+                                                                                    "by_hour":  {
+                                                                                                    "additionalProperties":  {
+                                                                                                                                 "type":  "integer"
+                                                                                                                             },
+                                                                                                    "type":  "object",
+                                                                                                    "title":  "By Hour"
+                                                                                                },
+                                                                                    "monthly_trend":  {
+                                                                                                          "items":  {
+                                                                                                                        "additionalProperties":  true,
+                                                                                                                        "type":  "object"
+                                                                                                                    },
+                                                                                                          "type":  "array",
+                                                                                                          "title":  "Monthly Trend"
+                                                                                                      },
+                                                                                    "recent_events":  {
+                                                                                                          "items":  {
+                                                                                                                        "$ref":  "#/components/schemas/CommitActivityEvent"
+                                                                                                                    },
+                                                                                                          "type":  "array",
+                                                                                                          "title":  "Recent Events"
+                                                                                                      },
+                                                                                    "total_recent_events":  {
+                                                                                                                "type":  "integer",
+                                                                                                                "title":  "Total Recent Events"
+                                                                                                            },
+                                                                                    "weekend_percentage":  {
+                                                                                                               "type":  "number",
+                                                                                                               "title":  "Weekend Percentage"
+                                                                                                           },
+                                                                                    "disclaimer":  {
+                                                                                                       "type":  "string",
+                                                                                                       "title":  "Disclaimer",
+                                                                                                       "default":  "Activity timestamps reflect commit author dates and public GitHub event records. Do not infer actual working hours, effort, or developer productivity solely from timestamp distribution."
+                                                                                                   }
+                                                                                },
+                                                                 "type":  "object",
+                                                                 "required":  [
+                                                                                  "by_day_of_week",
+                                                                                  "by_hour",
+                                                                                  "monthly_trend",
+                                                                                  "recent_events",
+                                                                                  "total_recent_events",
+                                                                                  "weekend_percentage"
+                                                                              ],
+                                                                 "title":  "ActivityAnalytics"
+                                                             },
+                                       "CommitActivityEvent":  {
+                                                                   "properties":  {
+                                                                                      "id":  {
+                                                                                                 "type":  "string",
+                                                                                                 "title":  "Id"
+                                                                                             },
+                                                                                      "type":  {
+                                                                                                   "type":  "string",
+                                                                                                   "title":  "Type"
+                                                                                               },
+                                                                                      "repo_name":  {
+                                                                                                        "type":  "string",
+                                                                                                        "title":  "Repo Name"
+                                                                                                    },
+                                                                                      "created_at":  {
+                                                                                                         "type":  "string",
+                                                                                                         "title":  "Created At"
+                                                                                                     },
+                                                                                      "message":  {
+                                                                                                      "anyOf":  [
+                                                                                                                    "@{type=string}",
+                                                                                                                    "@{type=null}"
+                                                                                                                ],
+                                                                                                      "title":  "Message"
+                                                                                                  },
+                                                                                      "author":  {
+                                                                                                     "anyOf":  [
+                                                                                                                   "@{type=string}",
+                                                                                                                   "@{type=null}"
+                                                                                                               ],
+                                                                                                     "title":  "Author"
+                                                                                                 },
+                                                                                      "url":  {
+                                                                                                  "anyOf":  [
+                                                                                                                "@{type=string}",
+                                                                                                                "@{type=null}"
+                                                                                                            ],
+                                                                                                  "title":  "Url"
+                                                                                              }
+                                                                                  },
+                                                                   "type":  "object",
+                                                                   "required":  [
+                                                                                    "id",
+                                                                                    "type",
+                                                                                    "repo_name",
+                                                                                    "created_at"
+                                                                                ],
+                                                                   "title":  "CommitActivityEvent"
+                                                               },
+                                       "ContributionData":  {
+                                                                "properties":  {
+                                                                                   "total_contributions":  {
+                                                                                                               "type":  "integer",
+                                                                                                               "title":  "Total Contributions"
+                                                                                                           },
+                                                                                   "active_days":  {
+                                                                                                       "type":  "integer",
+                                                                                                       "title":  "Active Days"
+                                                                                                   },
+                                                                                   "current_streak":  {
+                                                                                                          "type":  "integer",
+                                                                                                          "title":  "Current Streak"
+                                                                                                      },
+                                                                                   "longest_streak":  {
+                                                                                                          "type":  "integer",
+                                                                                                          "title":  "Longest Streak"
+                                                                                                      },
+                                                                                   "year":  {
+                                                                                                "type":  "integer",
+                                                                                                "title":  "Year"
+                                                                                            },
+                                                                                   "days":  {
+                                                                                                "items":  {
+                                                                                                              "$ref":  "#/components/schemas/HeatmapDay"
+                                                                                                          },
+                                                                                                "type":  "array",
+                                                                                                "title":  "Days"
+                                                                                            },
+                                                                                   "measurement_period":  {
+                                                                                                              "type":  "string",
+                                                                                                              "title":  "Measurement Period"
+                                                                                                          },
+                                                                                   "disclaimer":  {
+                                                                                                      "type":  "string",
+                                                                                                      "title":  "Disclaimer",
+                                                                                                      "default":  "Aggregated from public push events, commits, and pull requests accessible via GitHub Public API for the selected timeframe."
+                                                                                                  }
+                                                                               },
+                                                                "type":  "object",
+                                                                "required":  [
+                                                                                 "total_contributions",
+                                                                                 "active_days",
+                                                                                 "current_streak",
+                                                                                 "longest_streak",
+                                                                                 "year",
+                                                                                 "days",
+                                                                                 "measurement_period"
+                                                                             ],
+                                                                "title":  "ContributionData"
+                                                            },
+                                       "DeveloperComparison":  {
+                                                                   "properties":  {
+                                                                                      "developers":  {
+                                                                                                         "items":  {
+                                                                                                                       "$ref":  "#/components/schemas/DeveloperOverview"
+                                                                                                                   },
+                                                                                                         "type":  "array",
+                                                                                                         "title":  "Developers"
+                                                                                                     },
+                                                                                      "shared_languages":  {
+                                                                                                               "items":  {
+                                                                                                                             "type":  "string"
+                                                                                                                         },
+                                                                                                               "type":  "array",
+                                                                                                               "title":  "Shared Languages"
+                                                                                                           },
+                                                                                      "metrics_matrix":  {
+                                                                                                             "items":  {
+                                                                                                                           "additionalProperties":  true,
+                                                                                                                           "type":  "object"
+                                                                                                                       },
+                                                                                                             "type":  "array",
+                                                                                                             "title":  "Metrics Matrix"
+                                                                                                         },
+                                                                                      "disclaimer":  {
+                                                                                                         "type":  "string",
+                                                                                                         "title":  "Disclaimer",
+                                                                                                         "default":  "Developer comparisons measure public repository counts, stars, forks, and detected languages. Metrics do not measure overall skill, code quality, or engineering competence."
+                                                                                                     }
+                                                                                  },
+                                                                   "type":  "object",
+                                                                   "required":  [
+                                                                                    "developers",
+                                                                                    "shared_languages",
+                                                                                    "metrics_matrix"
+                                                                                ],
+                                                                   "title":  "DeveloperComparison"
+                                                               },
+                                       "DeveloperOverview":  {
+                                                                 "properties":  {
+                                                                                    "username":  {
+                                                                                                     "type":  "string",
+                                                                                                     "title":  "Username"
+                                                                                                 },
+                                                                                    "name":  {
+                                                                                                 "anyOf":  [
+                                                                                                               "@{type=string}",
+                                                                                                               "@{type=null}"
+                                                                                                           ],
+                                                                                                 "title":  "Name"
+                                                                                             },
+                                                                                    "avatar_url":  {
+                                                                                                       "type":  "string",
+                                                                                                       "title":  "Avatar Url"
+                                                                                                   },
+                                                                                    "bio":  {
+                                                                                                "anyOf":  [
+                                                                                                              "@{type=string}",
+                                                                                                              "@{type=null}"
+                                                                                                          ],
+                                                                                                "title":  "Bio"
+                                                                                            },
+                                                                                    "location":  {
+                                                                                                     "anyOf":  [
+                                                                                                                   "@{type=string}",
+                                                                                                                   "@{type=null}"
+                                                                                                               ],
+                                                                                                     "title":  "Location"
+                                                                                                 },
+                                                                                    "company":  {
+                                                                                                    "anyOf":  [
+                                                                                                                  "@{type=string}",
+                                                                                                                  "@{type=null}"
+                                                                                                              ],
+                                                                                                    "title":  "Company"
+                                                                                                },
+                                                                                    "blog":  {
+                                                                                                 "anyOf":  [
+                                                                                                               "@{type=string}",
+                                                                                                               "@{type=null}"
+                                                                                                           ],
+                                                                                                 "title":  "Blog"
+                                                                                             },
+                                                                                    "twitter_username":  {
+                                                                                                             "anyOf":  [
+                                                                                                                           "@{type=string}",
+                                                                                                                           "@{type=null}"
+                                                                                                                       ],
+                                                                                                             "title":  "Twitter Username"
+                                                                                                         },
+                                                                                    "html_url":  {
+                                                                                                     "type":  "string",
+                                                                                                     "title":  "Html Url"
+                                                                                                 },
+                                                                                    "public_repos":  {
+                                                                                                         "type":  "integer",
+                                                                                                         "title":  "Public Repos",
+                                                                                                         "default":  0
+                                                                                                     },
+                                                                                    "public_gists":  {
+                                                                                                         "type":  "integer",
+                                                                                                         "title":  "Public Gists",
+                                                                                                         "default":  0
+                                                                                                     },
+                                                                                    "followers":  {
+                                                                                                      "type":  "integer",
+                                                                                                      "title":  "Followers",
+                                                                                                      "default":  0
+                                                                                                  },
+                                                                                    "following":  {
+                                                                                                      "type":  "integer",
+                                                                                                      "title":  "Following",
+                                                                                                      "default":  0
+                                                                                                  },
+                                                                                    "created_at":  {
+                                                                                                       "type":  "string",
+                                                                                                       "title":  "Created At"
+                                                                                                   },
+                                                                                    "total_stars":  {
+                                                                                                        "type":  "integer",
+                                                                                                        "title":  "Total Stars",
+                                                                                                        "default":  0
+                                                                                                    },
+                                                                                    "total_forks":  {
+                                                                                                        "type":  "integer",
+                                                                                                        "title":  "Total Forks",
+                                                                                                        "default":  0
+                                                                                                    },
+                                                                                    "primary_language":  {
+                                                                                                             "anyOf":  [
+                                                                                                                           "@{type=string}",
+                                                                                                                           "@{type=null}"
+                                                                                                                       ],
+                                                                                                             "title":  "Primary Language"
+                                                                                                         },
+                                                                                    "is_hireable":  {
+                                                                                                        "anyOf":  [
+                                                                                                                      "@{type=boolean}",
+                                                                                                                      "@{type=null}"
+                                                                                                                  ],
+                                                                                                        "title":  "Is Hireable"
+                                                                                                    },
+                                                                                    "measurement_period":  {
+                                                                                                               "type":  "string",
+                                                                                                               "title":  "Measurement Period",
+                                                                                                               "default":  "All public repository data available via GitHub API"
+                                                                                                           },
+                                                                                    "data_disclaimer":  {
+                                                                                                            "type":  "string",
+                                                                                                            "title":  "Data Disclaimer",
+                                                                                                            "default":  "Metrics reflect publicly accessible GitHub repositories and events only. Private activity is excluded unless authorized."
+                                                                                                        }
+                                                                                },
+                                                                 "type":  "object",
+                                                                 "required":  [
+                                                                                  "username",
+                                                                                  "avatar_url",
+                                                                                  "html_url",
+                                                                                  "created_at"
+                                                                              ],
+                                                                 "title":  "DeveloperOverview"
+                                                             },
+                                       "ExportRequest":  {
+                                                             "properties":  {
+                                                                                "username":  {
+                                                                                                 "type":  "string",
+                                                                                                 "title":  "Username"
+                                                                                             },
+                                                                                "format":  {
+                                                                                               "type":  "string",
+                                                                                               "title":  "Format",
+                                                                                               "default":  "csv"
+                                                                                           },
+                                                                                "include_repos":  {
+                                                                                                      "type":  "boolean",
+                                                                                                      "title":  "Include Repos",
+                                                                                                      "default":  true
+                                                                                                  },
+                                                                                "include_languages":  {
+                                                                                                          "type":  "boolean",
+                                                                                                          "title":  "Include Languages",
+                                                                                                          "default":  true
+                                                                                                      },
+                                                                                "include_activity":  {
+                                                                                                         "type":  "boolean",
+                                                                                                         "title":  "Include Activity",
+                                                                                                         "default":  true
+                                                                                                     }
+                                                                            },
+                                                             "type":  "object",
+                                                             "required":  [
+                                                                              "username"
+                                                                          ],
+                                                             "title":  "ExportRequest"
+                                                         },
+                                       "HTTPValidationError":  {
+                                                                   "properties":  {
+                                                                                      "detail":  {
+                                                                                                     "items":  {
+                                                                                                                   "$ref":  "#/components/schemas/ValidationError"
+                                                                                                               },
+                                                                                                     "type":  "array",
+                                                                                                     "title":  "Detail"
+                                                                                                 }
+                                                                                  },
+                                                                   "type":  "object",
+                                                                   "title":  "HTTPValidationError"
+                                                               },
+                                       "HealthScoreBreakdown":  {
+                                                                    "properties":  {
+                                                                                       "repo_name":  {
+                                                                                                         "type":  "string",
+                                                                                                         "title":  "Repo Name"
+                                                                                                     },
+                                                                                       "overall_score":  {
+                                                                                                             "type":  "number",
+                                                                                                             "title":  "Overall Score"
+                                                                                                         },
+                                                                                       "grade":  {
+                                                                                                     "type":  "string",
+                                                                                                     "title":  "Grade"
+                                                                                                 },
+                                                                                       "maintenance_score":  {
+                                                                                                                 "type":  "number",
+                                                                                                                 "title":  "Maintenance Score"
+                                                                                                             },
+                                                                                       "documentation_score":  {
+                                                                                                                   "type":  "number",
+                                                                                                                   "title":  "Documentation Score"
+                                                                                                               },
+                                                                                       "issue_score":  {
+                                                                                                           "type":  "number",
+                                                                                                           "title":  "Issue Score"
+                                                                                                       },
+                                                                                       "community_score":  {
+                                                                                                               "type":  "number",
+                                                                                                               "title":  "Community Score"
+                                                                                                           },
+                                                                                       "release_score":  {
+                                                                                                             "type":  "number",
+                                                                                                             "title":  "Release Score"
+                                                                                                         },
+                                                                                       "reasons":  {
+                                                                                                       "items":  {
+                                                                                                                     "type":  "string"
+                                                                                                                 },
+                                                                                                       "type":  "array",
+                                                                                                       "title":  "Reasons"
+                                                                                                   },
+                                                                                       "suggestions":  {
+                                                                                                           "items":  {
+                                                                                                                         "type":  "string"
+                                                                                                                     },
+                                                                                                           "type":  "array",
+                                                                                                           "title":  "Suggestions"
+                                                                                                       },
+                                                                                       "disclaimer":  {
+                                                                                                          "type":  "string",
+                                                                                                          "title":  "Disclaimer",
+                                                                                                          "default":  "DevInsights Repository Health is an algorithmic, rules-based diagnostic score calculated from public maintenance indicators, documentation checks, and issue activity. It is not an official GitHub rating or a definitive measure of software quality."
+                                                                                                      }
+                                                                                   },
+                                                                    "type":  "object",
+                                                                    "required":  [
+                                                                                     "repo_name",
+                                                                                     "overall_score",
+                                                                                     "grade",
+                                                                                     "maintenance_score",
+                                                                                     "documentation_score",
+                                                                                     "issue_score",
+                                                                                     "community_score",
+                                                                                     "release_score",
+                                                                                     "reasons",
+                                                                                     "suggestions"
+                                                                                 ],
+                                                                    "title":  "HealthScoreBreakdown"
+                                                                },
+                                       "HeatmapDay":  {
+                                                          "properties":  {
+                                                                             "date":  {
+                                                                                          "type":  "string",
+                                                                                          "title":  "Date"
+                                                                                      },
+                                                                             "count":  {
+                                                                                           "type":  "integer",
+                                                                                           "title":  "Count"
+                                                                                       },
+                                                                             "level":  {
+                                                                                           "type":  "integer",
+                                                                                           "title":  "Level"
+                                                                                       },
+                                                                             "day_of_week":  {
+                                                                                                 "type":  "integer",
+                                                                                                 "title":  "Day Of Week"
+                                                                                             }
+                                                                         },
+                                                          "type":  "object",
+                                                          "required":  [
+                                                                           "date",
+                                                                           "count",
+                                                                           "level",
+                                                                           "day_of_week"
+                                                                       ],
+                                                          "title":  "HeatmapDay"
+                                                      },
+                                       "LanguageAnalytics":  {
+                                                                 "properties":  {
+                                                                                    "languages":  {
+                                                                                                      "items":  {
+                                                                                                                    "$ref":  "#/components/schemas/LanguageStat"
+                                                                                                                },
+                                                                                                      "type":  "array",
+                                                                                                      "title":  "Languages"
+                                                                                                  },
+                                                                                    "total_bytes":  {
+                                                                                                        "type":  "integer",
+                                                                                                        "title":  "Total Bytes"
+                                                                                                    },
+                                                                                    "total_repos_analyzed":  {
+                                                                                                                 "type":  "integer",
+                                                                                                                 "title":  "Total Repos Analyzed"
+                                                                                                             },
+                                                                                    "disclaimer":  {
+                                                                                                       "type":  "string",
+                                                                                                       "title":  "Disclaimer",
+                                                                                                       "default":  "GitHub repository language statistics estimate code byte composition across repository default branches, not hours worked or time spent coding."
+                                                                                                   }
+                                                                                },
+                                                                 "type":  "object",
+                                                                 "required":  [
+                                                                                  "languages",
+                                                                                  "total_bytes",
+                                                                                  "total_repos_analyzed"
+                                                                              ],
+                                                                 "title":  "LanguageAnalytics"
+                                                             },
+                                       "LanguageStat":  {
+                                                            "properties":  {
+                                                                               "name":  {
+                                                                                            "type":  "string",
+                                                                                            "title":  "Name"
+                                                                                        },
+                                                                               "bytes":  {
+                                                                                             "type":  "integer",
+                                                                                             "title":  "Bytes"
+                                                                                         },
+                                                                               "percentage":  {
+                                                                                                  "type":  "number",
+                                                                                                  "title":  "Percentage"
+                                                                                              },
+                                                                               "repo_count":  {
+                                                                                                  "type":  "integer",
+                                                                                                  "title":  "Repo Count"
+                                                                                              },
+                                                                               "color":  {
+                                                                                             "type":  "string",
+                                                                                             "title":  "Color"
+                                                                                         }
+                                                                           },
+                                                            "type":  "object",
+                                                            "required":  [
+                                                                             "name",
+                                                                             "bytes",
+                                                                             "percentage",
+                                                                             "repo_count",
+                                                                             "color"
+                                                                         ],
+                                                            "title":  "LanguageStat"
+                                                        },
+                                       "PortfolioAuditFinding":  {
+                                                                     "properties":  {
+                                                                                        "id":  {
+                                                                                                   "type":  "string",
+                                                                                                   "title":  "Id"
+                                                                                               },
+                                                                                        "category":  {
+                                                                                                         "type":  "string",
+                                                                                                         "title":  "Category"
+                                                                                                     },
+                                                                                        "status":  {
+                                                                                                       "type":  "string",
+                                                                                                       "title":  "Status"
+                                                                                                   },
+                                                                                        "title":  {
+                                                                                                      "type":  "string",
+                                                                                                      "title":  "Title"
+                                                                                                  },
+                                                                                        "description":  {
+                                                                                                            "type":  "string",
+                                                                                                            "title":  "Description"
+                                                                                                        },
+                                                                                        "impact":  {
+                                                                                                       "type":  "string",
+                                                                                                       "title":  "Impact"
+                                                                                                   }
+                                                                                    },
+                                                                     "type":  "object",
+                                                                     "required":  [
+                                                                                      "id",
+                                                                                      "category",
+                                                                                      "status",
+                                                                                      "title",
+                                                                                      "description",
+                                                                                      "impact"
+                                                                                  ],
+                                                                     "title":  "PortfolioAuditFinding"
+                                                                 },
+                                       "PortfolioAuditResult":  {
+                                                                    "properties":  {
+                                                                                       "username":  {
+                                                                                                        "type":  "string",
+                                                                                                        "title":  "Username"
+                                                                                                    },
+                                                                                       "overall_score":  {
+                                                                                                             "type":  "number",
+                                                                                                             "title":  "Overall Score"
+                                                                                                         },
+                                                                                       "grade":  {
+                                                                                                     "type":  "string",
+                                                                                                     "title":  "Grade"
+                                                                                                 },
+                                                                                       "completeness_score":  {
+                                                                                                                  "type":  "number",
+                                                                                                                  "title":  "Completeness Score"
+                                                                                                              },
+                                                                                       "repository_hygiene_score":  {
+                                                                                                                        "type":  "number",
+                                                                                                                        "title":  "Repository Hygiene Score"
+                                                                                                                    },
+                                                                                       "licensing_score":  {
+                                                                                                               "type":  "number",
+                                                                                                               "title":  "Licensing Score"
+                                                                                                           },
+                                                                                       "findings":  {
+                                                                                                        "items":  {
+                                                                                                                      "$ref":  "#/components/schemas/PortfolioAuditFinding"
+                                                                                                                  },
+                                                                                                        "type":  "array",
+                                                                                                        "title":  "Findings"
+                                                                                                    },
+                                                                                       "action_items":  {
+                                                                                                            "items":  {
+                                                                                                                          "additionalProperties":  "@{type=string}",
+                                                                                                                          "type":  "object"
+                                                                                                                      },
+                                                                                                            "type":  "array",
+                                                                                                            "title":  "Action Items"
+                                                                                                        },
+                                                                                       "disclaimer":  {
+                                                                                                          "type":  "string",
+                                                                                                          "title":  "Disclaimer",
+                                                                                                          "default":  "Portfolio audit generates heuristic recommendations based on recruiter readability and open-source best practices. It does not predict employment outcomes or job suitability."
+                                                                                                      }
+                                                                                   },
+                                                                    "type":  "object",
+                                                                    "required":  [
+                                                                                     "username",
+                                                                                     "overall_score",
+                                                                                     "grade",
+                                                                                     "completeness_score",
+                                                                                     "repository_hygiene_score",
+                                                                                     "licensing_score",
+                                                                                     "findings",
+                                                                                     "action_items"
+                                                                                 ],
+                                                                    "title":  "PortfolioAuditResult"
+                                                                },
+                                       "RepositorySummary":  {
+                                                                 "properties":  {
+                                                                                    "id":  {
+                                                                                               "type":  "integer",
+                                                                                               "title":  "Id"
+                                                                                           },
+                                                                                    "name":  {
+                                                                                                 "type":  "string",
+                                                                                                 "title":  "Name"
+                                                                                             },
+                                                                                    "full_name":  {
+                                                                                                      "type":  "string",
+                                                                                                      "title":  "Full Name"
+                                                                                                  },
+                                                                                    "description":  {
+                                                                                                        "anyOf":  [
+                                                                                                                      "@{type=string}",
+                                                                                                                      "@{type=null}"
+                                                                                                                  ],
+                                                                                                        "title":  "Description"
+                                                                                                    },
+                                                                                    "html_url":  {
+                                                                                                     "type":  "string",
+                                                                                                     "title":  "Html Url"
+                                                                                                 },
+                                                                                    "language":  {
+                                                                                                     "anyOf":  [
+                                                                                                                   "@{type=string}",
+                                                                                                                   "@{type=null}"
+                                                                                                               ],
+                                                                                                     "title":  "Language"
+                                                                                                 },
+                                                                                    "stargazers_count":  {
+                                                                                                             "type":  "integer",
+                                                                                                             "title":  "Stargazers Count",
+                                                                                                             "default":  0
+                                                                                                         },
+                                                                                    "forks_count":  {
+                                                                                                        "type":  "integer",
+                                                                                                        "title":  "Forks Count",
+                                                                                                        "default":  0
+                                                                                                    },
+                                                                                    "open_issues_count":  {
+                                                                                                              "type":  "integer",
+                                                                                                              "title":  "Open Issues Count",
+                                                                                                              "default":  0
+                                                                                                          },
+                                                                                    "size_kb":  {
+                                                                                                    "type":  "integer",
+                                                                                                    "title":  "Size Kb",
+                                                                                                    "default":  0
+                                                                                                },
+                                                                                    "created_at":  {
+                                                                                                       "type":  "string",
+                                                                                                       "title":  "Created At"
+                                                                                                   },
+                                                                                    "updated_at":  {
+                                                                                                       "type":  "string",
+                                                                                                       "title":  "Updated At"
+                                                                                                   },
+                                                                                    "pushed_at":  {
+                                                                                                      "anyOf":  [
+                                                                                                                    "@{type=string}",
+                                                                                                                    "@{type=null}"
+                                                                                                                ],
+                                                                                                      "title":  "Pushed At"
+                                                                                                  },
+                                                                                    "is_fork":  {
+                                                                                                    "type":  "boolean",
+                                                                                                    "title":  "Is Fork",
+                                                                                                    "default":  false
+                                                                                                },
+                                                                                    "is_archived":  {
+                                                                                                        "type":  "boolean",
+                                                                                                        "title":  "Is Archived",
+                                                                                                        "default":  false
+                                                                                                    },
+                                                                                    "license_name":  {
+                                                                                                         "anyOf":  [
+                                                                                                                       "@{type=string}",
+                                                                                                                       "@{type=null}"
+                                                                                                                   ],
+                                                                                                         "title":  "License Name"
+                                                                                                     },
+                                                                                    "default_branch":  {
+                                                                                                           "type":  "string",
+                                                                                                           "title":  "Default Branch",
+                                                                                                           "default":  "main"
+                                                                                                       },
+                                                                                    "topics":  {
+                                                                                                   "items":  {
+                                                                                                                 "type":  "string"
+                                                                                                             },
+                                                                                                   "type":  "array",
+                                                                                                   "title":  "Topics",
+                                                                                                   "default":  [
+
+                                                                                                               ]
+                                                                                               },
+                                                                                    "health_score":  {
+                                                                                                         "anyOf":  [
+                                                                                                                       "@{type=number}",
+                                                                                                                       "@{type=null}"
+                                                                                                                   ],
+                                                                                                         "title":  "Health Score"
+                                                                                                     }
+                                                                                },
+                                                                 "type":  "object",
+                                                                 "required":  [
+                                                                                  "id",
+                                                                                  "name",
+                                                                                  "full_name",
+                                                                                  "html_url",
+                                                                                  "created_at",
+                                                                                  "updated_at"
+                                                                              ],
+                                                                 "title":  "RepositorySummary"
+                                                             },
+                                       "SmartInsight":  {
+                                                            "properties":  {
+                                                                               "id":  {
+                                                                                          "type":  "string",
+                                                                                          "title":  "Id"
+                                                                                      },
+                                                                               "type":  {
+                                                                                            "type":  "string",
+                                                                                            "title":  "Type"
+                                                                                        },
+                                                                               "severity":  {
+                                                                                                "type":  "string",
+                                                                                                "title":  "Severity"
+                                                                                            },
+                                                                               "title":  {
+                                                                                             "type":  "string",
+                                                                                             "title":  "Title"
+                                                                                         },
+                                                                               "description":  {
+                                                                                                   "type":  "string",
+                                                                                                   "title":  "Description"
+                                                                                               },
+                                                                               "metric_source":  {
+                                                                                                     "type":  "string",
+                                                                                                     "title":  "Metric Source"
+                                                                                                 }
+                                                                           },
+                                                            "type":  "object",
+                                                            "required":  [
+                                                                             "id",
+                                                                             "type",
+                                                                             "severity",
+                                                                             "title",
+                                                                             "description",
+                                                                             "metric_source"
+                                                                         ],
+                                                            "title":  "SmartInsight"
+                                                        },
+                                       "SnapshotCreate":  {
+                                                              "properties":  {
+                                                                                 "username":  {
+                                                                                                  "type":  "string",
+                                                                                                  "title":  "Username"
+                                                                                              },
+                                                                                 "note":  {
+                                                                                              "anyOf":  [
+                                                                                                            "@{type=string}",
+                                                                                                            "@{type=null}"
+                                                                                                        ],
+                                                                                              "title":  "Note"
+                                                                                          }
+                                                                             },
+                                                              "type":  "object",
+                                                              "required":  [
+                                                                               "username"
+                                                                           ],
+                                                              "title":  "SnapshotCreate"
+                                                          },
+                                       "SnapshotResponse":  {
+                                                                "properties":  {
+                                                                                   "id":  {
+                                                                                              "type":  "integer",
+                                                                                              "title":  "Id"
+                                                                                          },
+                                                                                   "username":  {
+                                                                                                    "type":  "string",
+                                                                                                    "title":  "Username"
+                                                                                                },
+                                                                                   "captured_at":  {
+                                                                                                       "type":  "string",
+                                                                                                       "title":  "Captured At"
+                                                                                                   },
+                                                                                   "followers":  {
+                                                                                                     "type":  "integer",
+                                                                                                     "title":  "Followers"
+                                                                                                 },
+                                                                                   "public_repos":  {
+                                                                                                        "type":  "integer",
+                                                                                                        "title":  "Public Repos"
+                                                                                                    },
+                                                                                   "total_stars":  {
+                                                                                                       "type":  "integer",
+                                                                                                       "title":  "Total Stars"
+                                                                                                   },
+                                                                                   "total_forks":  {
+                                                                                                       "type":  "integer",
+                                                                                                       "title":  "Total Forks"
+                                                                                                   },
+                                                                                   "health_score":  {
+                                                                                                        "type":  "number",
+                                                                                                        "title":  "Health Score"
+                                                                                                    },
+                                                                                   "audit_score":  {
+                                                                                                       "type":  "number",
+                                                                                                       "title":  "Audit Score"
+                                                                                                   },
+                                                                                   "note":  {
+                                                                                                "anyOf":  [
+                                                                                                              "@{type=string}",
+                                                                                                              "@{type=null}"
+                                                                                                          ],
+                                                                                                "title":  "Note"
+                                                                                            }
+                                                                               },
+                                                                "type":  "object",
+                                                                "required":  [
+                                                                                 "id",
+                                                                                 "username",
+                                                                                 "captured_at",
+                                                                                 "followers",
+                                                                                 "public_repos",
+                                                                                 "total_stars",
+                                                                                 "total_forks",
+                                                                                 "health_score",
+                                                                                 "audit_score"
+                                                                             ],
+                                                                "title":  "SnapshotResponse"
+                                                            },
+                                       "UserPreferenceResponse":  {
+                                                                      "properties":  {
+                                                                                         "user_key":  {
+                                                                                                          "type":  "string",
+                                                                                                          "title":  "User Key"
+                                                                                                      },
+                                                                                         "theme":  {
+                                                                                                       "type":  "string",
+                                                                                                       "title":  "Theme"
+                                                                                                   },
+                                                                                         "layout_mode":  {
+                                                                                                             "type":  "string",
+                                                                                                             "title":  "Layout Mode"
+                                                                                                         },
+                                                                                         "visible_widgets":  {
+                                                                                                                 "items":  {
+                                                                                                                               "type":  "string"
+                                                                                                                           },
+                                                                                                                 "type":  "array",
+                                                                                                                 "title":  "Visible Widgets"
+                                                                                                             },
+                                                                                         "widget_order":  {
+                                                                                                              "items":  {
+                                                                                                                            "type":  "string"
+                                                                                                                        },
+                                                                                                              "type":  "array",
+                                                                                                              "title":  "Widget Order"
+                                                                                                          },
+                                                                                         "pinned_developers":  {
+                                                                                                                   "items":  {
+                                                                                                                                 "type":  "string"
+                                                                                                                             },
+                                                                                                                   "type":  "array",
+                                                                                                                   "title":  "Pinned Developers"
+                                                                                                               },
+                                                                                         "updated_at":  {
+                                                                                                            "type":  "string",
+                                                                                                            "title":  "Updated At"
+                                                                                                        }
+                                                                                     },
+                                                                      "type":  "object",
+                                                                      "required":  [
+                                                                                       "user_key",
+                                                                                       "theme",
+                                                                                       "layout_mode",
+                                                                                       "visible_widgets",
+                                                                                       "widget_order",
+                                                                                       "pinned_developers",
+                                                                                       "updated_at"
+                                                                                   ],
+                                                                      "title":  "UserPreferenceResponse"
+                                                                  },
+                                       "UserPreferenceUpdate":  {
+                                                                    "properties":  {
+                                                                                       "theme":  {
+                                                                                                     "anyOf":  [
+                                                                                                                   "@{type=string}",
+                                                                                                                   "@{type=null}"
+                                                                                                               ],
+                                                                                                     "title":  "Theme"
+                                                                                                 },
+                                                                                       "layout_mode":  {
+                                                                                                           "anyOf":  [
+                                                                                                                         "@{type=string}",
+                                                                                                                         "@{type=null}"
+                                                                                                                     ],
+                                                                                                           "title":  "Layout Mode"
+                                                                                                       },
+                                                                                       "visible_widgets":  {
+                                                                                                               "anyOf":  [
+                                                                                                                             "@{items=; type=array}",
+                                                                                                                             "@{type=null}"
+                                                                                                                         ],
+                                                                                                               "title":  "Visible Widgets"
+                                                                                                           },
+                                                                                       "widget_order":  {
+                                                                                                            "anyOf":  [
+                                                                                                                          "@{items=; type=array}",
+                                                                                                                          "@{type=null}"
+                                                                                                                      ],
+                                                                                                            "title":  "Widget Order"
+                                                                                                        },
+                                                                                       "pinned_developers":  {
+                                                                                                                 "anyOf":  [
+                                                                                                                               "@{items=; type=array}",
+                                                                                                                               "@{type=null}"
+                                                                                                                           ],
+                                                                                                                 "title":  "Pinned Developers"
+                                                                                                             }
+                                                                                   },
+                                                                    "type":  "object",
+                                                                    "title":  "UserPreferenceUpdate"
+                                                                },
+                                       "ValidationError":  {
+                                                               "properties":  {
+                                                                                  "loc":  {
+                                                                                              "items":  {
+                                                                                                            "anyOf":  " "
+                                                                                                        },
+                                                                                              "type":  "array",
+                                                                                              "title":  "Location"
+                                                                                          },
+                                                                                  "msg":  {
+                                                                                              "type":  "string",
+                                                                                              "title":  "Message"
+                                                                                          },
+                                                                                  "type":  {
+                                                                                               "type":  "string",
+                                                                                               "title":  "Error Type"
+                                                                                           },
+                                                                                  "input":  {
+                                                                                                "title":  "Input"
+                                                                                            },
+                                                                                  "ctx":  {
+                                                                                              "type":  "object",
+                                                                                              "title":  "Context"
+                                                                                          }
+                                                                              },
+                                                               "type":  "object",
+                                                               "required":  [
+                                                                                "loc",
+                                                                                "msg",
+                                                                                "type"
+                                                                            ],
+                                                               "title":  "ValidationError"
+                                                           }
+                                   }
+                   }
+}

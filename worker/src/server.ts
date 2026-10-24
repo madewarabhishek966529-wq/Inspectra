@@ -91,10 +91,27 @@ app.post('/api/worker/execute', async (req: Request, res: Response) => {
     });
 
     runReports.set(config.runId, report);
+
+    const reportReadyEvent: ExecutionEventPayload = {
+      runId: config.runId,
+      type: 'COMPLETE',
+      step: 'COMPLETED',
+      message: `Audit completed with overall quality score of ${report.metrics.overallScore}/100`,
+      timestamp: new Date().toISOString()
+    };
+    runEvents.get(config.runId)?.push(reportReadyEvent);
+
+    const clients = sseClients.get(config.runId);
+    if (clients) {
+      for (const client of clients) {
+        client.write(`data: ${JSON.stringify(reportReadyEvent)}\n\n`);
+      }
+    }
   } catch (err: any) {
     console.error(`[Worker Error] Run ${config.runId} failed:`, err);
   }
 });
+
 
 // Get run status and report
 app.get('/api/worker/runs/:runId/status', (req: Request, res: Response) => {

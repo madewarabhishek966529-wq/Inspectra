@@ -1,0 +1,365 @@
+[
+  {
+    "path": "/api/health",
+    "method": "GET",
+    "summary": "Health Check",
+    "parameters": [],
+    "requestBody": false,
+    "tags": [
+      "System Health"
+    ]
+  },
+  {
+    "path": "/api/developers/compare",
+    "method": "GET",
+    "summary": "Compare Developers",
+    "parameters": [
+      {
+        "name": "usernames",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "description": "Comma-separated list of 2 to 4 GitHub usernames",
+          "title": "Usernames"
+        },
+        "description": "Comma-separated list of 2 to 4 GitHub usernames"
+      }
+    ],
+    "requestBody": false,
+    "tags": [
+      "Compare"
+    ]
+  },
+  {
+    "path": "/api/developers/{username}/overview",
+    "method": "GET",
+    "summary": "Get Developer Overview",
+    "parameters": [
+      {
+        "name": "username",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "title": "Username"
+        }
+      }
+    ],
+    "requestBody": false,
+    "tags": [
+      "Developers"
+    ]
+  },
+  {
+    "path": "/api/developers/{username}/repositories",
+    "method": "GET",
+    "summary": "Get Developer Repositories",
+    "parameters": [
+      {
+        "name": "username",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "title": "Username"
+        }
+      },
+      {
+        "name": "sort",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "pattern": "^(updated|stars|forks|size|name)$",
+          "default": "updated",
+          "title": "Sort"
+        }
+      },
+      {
+        "name": "order",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "pattern": "^(asc|desc)$",
+          "default": "desc",
+          "title": "Order"
+        }
+      },
+      {
+        "name": "language",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "anyOf": " ",
+          "title": "Language"
+        }
+      },
+      {
+        "name": "include_forks",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "boolean",
+          "default": true,
+          "title": "Include Forks"
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "maximum": 100,
+          "minimum": 1,
+          "default": 100,
+          "title": "Limit"
+        }
+      }
+    ],
+    "requestBody": false,
+    "tags": [
+      "Developers"
+    ]
+  },
+  {
+    "path": "/api/developers/{username}/languages",
+    "method": "GET",
+    "summary": "Get Developer Languages",
+    "parameters": [
+      {
+        "name": "username",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "title": "Username"
+        }
+      }
+    ],
+    "requestBody": false,
+    "tags": [
+      "Developers"
+    ]
+  },
+  {
+    "path": "/api/developers/{username}/activity",
+    "method": "GET",
+    "summary": "Get Developer Activity",
+    "parameters": [
+      {
+        "name": "username",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "title": "Username"
+        }
+      }
+    ],
+    "requestBody": false,
+    "tags": [
+      "Developers"
+    ]
+  },
+  {
+    "path": "/api/developers/{username}/contributions",
+    "method": "GET",
+    "summary": "Get Developer Contributions",
+    "parameters": [
+      {
+        "name": "username",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "title": "Username"
+        }
+      },
+      {
+        "name": "year",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "anyOf": " ",
+          "title": "Year"
+        }
+      }
+    ],
+    "requestBody": false,
+    "tags": [
+      "Developers"
+    ]
+  },
+  {
+    "path": "/api/developers/{username}/portfolio-audit",
+    "method": "GET",
+    "summary": "Get Developer Portfolio Audit",
+    "parameters": [
+      {
+        "name": "username",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "title": "Username"
+        }
+      }
+    ],
+    "requestBody": false,
+    "tags": [
+      "Developers"
+    ]
+  },
+  {
+    "path": "/api/developers/{username}/insights",
+    "method": "GET",
+    "summary": "Get Developer Insights",
+    "parameters": [
+      {
+        "name": "username",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "title": "Username"
+        }
+      }
+    ],
+    "requestBody": false,
+    "tags": [
+      "Developers"
+    ]
+  },
+  {
+    "path": "/api/repositories/{owner}/{repo}/health",
+    "method": "GET",
+    "summary": "Get Repository Health",
+    "parameters": [
+      {
+        "name": "owner",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "title": "Owner"
+        }
+      },
+      {
+        "name": "repo",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "title": "Repo"
+        }
+      }
+    ],
+    "requestBody": false,
+    "tags": [
+      "Repositories"
+    ]
+  },
+  {
+    "path": "/api/snapshots/{username}",
+    "method": "GET",
+    "summary": "Get Developer Snapshots",
+    "parameters": [
+      {
+        "name": "username",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "title": "Username"
+        }
+      }
+    ],
+    "requestBody": false,
+    "tags": [
+      "Snapshots & Growth"
+    ]
+  },
+  {
+    "path": "/api/snapshots/{username}",
+    "method": "POST",
+    "summary": "Create Developer Snapshot",
+    "parameters": [
+      {
+        "name": "username",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "title": "Username"
+        }
+      }
+    ],
+    "requestBody": true,
+    "tags": [
+      "Snapshots & Growth"
+    ]
+  },
+  {
+    "path": "/api/preferences",
+    "method": "GET",
+    "summary": "Get User Preferences",
+    "parameters": [
+      {
+        "name": "user_key",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "default": "default",
+          "title": "User Key"
+        }
+      }
+    ],
+    "requestBody": false,
+    "tags": [
+      "Preferences & Layout"
+    ]
+  },
+  {
+    "path": "/api/preferences",
+    "method": "POST",
+    "summary": "Update User Preferences",
+    "parameters": [
+      {
+        "name": "user_key",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "default": "default",
+          "title": "User Key"
+        }
+      }
+    ],
+    "requestBody": true,
+    "tags": [
+      "Preferences & Layout"
+    ]
+  },
+  {
+    "path": "/api/reports/export",
+    "method": "POST",
+    "summary": "Export Developer Report",
+    "parameters": [],
+    "requestBody": true,
+    "tags": [
+      "Reports & Export"
+    ]
+  },
+  {
+    "path": "/",
+    "method": "GET",
+    "summary": "Root",
+    "parameters": [],
+    "requestBody": false,
+    "tags": []
+  }
+]
