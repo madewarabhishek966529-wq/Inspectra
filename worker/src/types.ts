@@ -6,8 +6,11 @@ export type TestCategory =
   | 'visual'
   | 'accessibility'
   | 'seo'
+  | 'performance'
+  | 'security'
   | 'console'
   | 'network';
+
 
 export type TestStatus = 'passed' | 'failed' | 'skipped' | 'blocked';
 export type FindingSeverity = 'critical' | 'high' | 'medium' | 'low' | 'info';
@@ -68,12 +71,16 @@ export interface Finding {
   suggestedFix?: string;
   confidence: number; // 0.0 - 1.0
   verificationStatus: 'verified' | 'suspected';
+  detectionMethod?: string;
+  technicalExplanation?: string;
+  verificationProcedure?: string;
   evidence?: {
     screenshot?: string;
     selector?: string;
     logs?: string[];
     networkCode?: number;
     ruleId?: string;
+    details?: Record<string, any>;
   };
 }
 
@@ -84,6 +91,8 @@ export interface QualityMetrics {
   accessibilityScore: number;
   seoScore: number;
   visualScore: number;
+  performanceScore?: number;
+  securityScore?: number;
   totalTests: number;
   passedCount: number;
   failedCount: number;
@@ -93,7 +102,27 @@ export interface QualityMetrics {
   highFindings: number;
   mediumFindings: number;
   lowFindings: number;
+  performanceData?: {
+    ttfbMs?: number;
+    fcpMs?: number;
+    lcpMs?: number;
+    cls?: number;
+    domContentLoadedMs?: number;
+    loadTimeMs?: number;
+    totalResources?: number;
+    totalBytesTransferred?: number;
+    renderBlockingCount?: number;
+  };
+  securityData?: {
+    isHttps?: boolean;
+    missingHeaders?: string[];
+    presentHeaders?: string[];
+    insecureCookies?: number;
+    mixedContentCount?: number;
+    exposedSecretsFound?: number;
+  };
 }
+
 
 export interface WorkerRunReport {
   runId: string;

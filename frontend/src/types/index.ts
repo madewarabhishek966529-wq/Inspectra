@@ -6,6 +6,8 @@ export type TestCategory =
   | 'visual'
   | 'accessibility'
   | 'seo'
+  | 'performance'
+  | 'security'
   | 'console'
   | 'network';
 
@@ -54,6 +56,8 @@ export interface ProjectTrendPoint {
   accessibilityScore?: number | null;
   seoScore?: number | null;
   visualScore?: number | null;
+  performanceScore?: number | null;
+  securityScore?: number | null;
   criticalFindings: number;
   highFindings: number;
   mediumFindings: number;
@@ -105,6 +109,8 @@ export interface QualityMetrics {
   accessibilityScore: number;
   seoScore: number;
   visualScore: number;
+  performanceScore?: number;
+  securityScore?: number;
   totalTests: number;
   passedCount: number;
   failedCount: number;
@@ -115,6 +121,25 @@ export interface QualityMetrics {
   mediumFindings: number;
   lowFindings: number;
   scoringVersion?: string;
+  performanceData?: {
+    ttfbMs?: number;
+    fcpMs?: number;
+    lcpMs?: number;
+    cls?: number;
+    domContentLoadedMs?: number;
+    loadTimeMs?: number;
+    totalResources?: number;
+    totalBytesTransferred?: number;
+    renderBlockingCount?: number;
+  };
+  securityData?: {
+    isHttps?: boolean;
+    missingHeaders?: string[];
+    presentHeaders?: string[];
+    insecureCookies?: number;
+    mixedContentCount?: number;
+    exposedSecretsFound?: number;
+  };
 }
 
 export interface DiscoveredPage {
@@ -154,6 +179,10 @@ export interface Finding {
   suggestedFix?: string;
   confidence?: number;
   verificationStatus?: 'verified' | 'suspected' | 'in_progress' | 'resolved' | 'ignored';
+  remediationStatus?: 'OPEN' | 'IN_PROGRESS' | 'FIXED' | 'ACCEPTED' | 'FALSE_POSITIVE' | string;
+  detectionMethod?: string;
+  technicalExplanation?: string;
+  verificationProcedure?: string;
   evidenceJson?: string;
   aiEnhanced?: boolean;
   createdAt?: string;

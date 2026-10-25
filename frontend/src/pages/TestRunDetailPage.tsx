@@ -254,6 +254,17 @@ export const TestRunDetailPage: React.FC = () => {
 
           {/* Export Downloads */}
           <a
+            href={apiRuns.getMarkdownUrl(run.id)}
+            target="_blank"
+            rel="noreferrer"
+            download
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-emerald-300 bg-emerald-950/60 border border-emerald-800/60 hover:bg-emerald-900/40 transition-all"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Markdown</span>
+          </a>
+
+          <a
             href={apiRuns.getPdfUrl(run.id)}
             target="_blank"
             rel="noreferrer"
@@ -317,13 +328,19 @@ export const TestRunDetailPage: React.FC = () => {
               Category Breakdown
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
                 { label: 'Functional Health', score: report.metrics.functionalScore, color: 'bg-cyan-500' },
                 { label: 'Responsive Layout', score: report.metrics.responsiveScore, color: 'bg-indigo-500' },
                 { label: 'Accessibility WCAG', score: report.metrics.accessibilityScore, color: 'bg-emerald-500' },
                 { label: 'SEO & Meta Tags', score: report.metrics.seoScore, color: 'bg-amber-500' },
                 { label: 'Visual Rendering', score: report.metrics.visualScore, color: 'bg-purple-500' },
+                ...(report.metrics.performanceScore !== undefined
+                  ? [{ label: 'Performance & Vitals', score: report.metrics.performanceScore, color: 'bg-teal-400' }]
+                  : []),
+                ...(report.metrics.securityScore !== undefined
+                  ? [{ label: 'Security & Transport', score: report.metrics.securityScore, color: 'bg-rose-400' }]
+                  : []),
               ].map((cat) => (
                 <div key={cat.label} className="p-3.5 rounded-xl bg-slate-900/50 border border-white/5 space-y-2">
                   <div className="flex items-center justify-between text-xs font-medium">
@@ -367,6 +384,130 @@ export const TestRunDetailPage: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Real Performance & Security Telemetry Cards */}
+      {report?.metrics && (report.metrics.performanceData || report.metrics.securityData) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Performance & Core Web Vitals */}
+          {report.metrics.performanceData && (
+            <div className="p-6 rounded-3xl glass-panel border border-teal-500/20 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-teal-400" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-teal-300">
+                    Real Browser Performance & Web Vitals
+                  </span>
+                </div>
+                <span className="text-[11px] font-mono text-slate-400">Synthetic Lab Run</span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                  <div className="text-[10px] text-slate-400 uppercase font-semibold">TTFB</div>
+                  <div className="text-base font-bold font-mono text-white mt-1">
+                    {report.metrics.performanceData.ttfbMs ?? 0}
+                    <span className="text-xs text-slate-400 font-normal"> ms</span>
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                  <div className="text-[10px] text-slate-400 uppercase font-semibold">FCP</div>
+                  <div className="text-base font-bold font-mono text-white mt-1">
+                    {report.metrics.performanceData.fcpMs ?? 0}
+                    <span className="text-xs text-slate-400 font-normal"> ms</span>
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                  <div className="text-[10px] text-slate-400 uppercase font-semibold">Load Time</div>
+                  <div className="text-base font-bold font-mono text-white mt-1">
+                    {report.metrics.performanceData.loadTimeMs ?? 0}
+                    <span className="text-xs text-slate-400 font-normal"> ms</span>
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                  <div className="text-[10px] text-slate-400 uppercase font-semibold">DOM Ready</div>
+                  <div className="text-base font-bold font-mono text-white mt-1">
+                    {report.metrics.performanceData.domContentLoadedMs ?? 0}
+                    <span className="text-xs text-slate-400 font-normal"> ms</span>
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                  <div className="text-[10px] text-slate-400 uppercase font-semibold">Render-Blocking</div>
+                  <div className={`text-base font-bold font-mono mt-1 ${
+                    (report.metrics.performanceData.renderBlockingCount || 0) > 0 ? 'text-amber-400' : 'text-emerald-400'
+                  }`}>
+                    {report.metrics.performanceData.renderBlockingCount ?? 0}
+                    <span className="text-xs text-slate-400 font-normal"> scripts</span>
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                  <div className="text-[10px] text-slate-400 uppercase font-semibold">Resources</div>
+                  <div className="text-base font-bold font-mono text-white mt-1">
+                    {report.metrics.performanceData.totalResources ?? 0}
+                    <span className="text-xs text-slate-400 font-normal"> assets</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Security & Transport Posture */}
+          {report.metrics.securityData && (
+            <div className="p-6 rounded-3xl glass-panel border border-rose-500/20 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-400" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-rose-300">
+                    Security Headers & Transport Baseline
+                  </span>
+                </div>
+                <span className="text-[11px] font-mono text-slate-400">Non-Destructive</span>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900/60 border border-white/5 text-xs">
+                  <span className="text-slate-300">HTTPS Transport Encryption:</span>
+                  <span className={`font-mono font-bold ${
+                    report.metrics.securityData.isHttps ? 'text-emerald-400' : 'text-rose-400'
+                  }`}>
+                    {report.metrics.securityData.isHttps ? 'ENCRYPTED (TLS)' : 'PLAINTEXT HTTP'}
+                  </span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-300">OWASP Security Headers:</span>
+                    <span className="font-mono text-cyan-400">
+                      {report.metrics.securityData.presentHeaders?.length || 0} configured
+                    </span>
+                  </div>
+                  {report.metrics.securityData.missingHeaders && report.metrics.securityData.missingHeaders.length > 0 && (
+                    <div className="text-[11px] text-slate-400">
+                      <span className="text-rose-400 font-semibold">Missing: </span>
+                      {report.metrics.securityData.missingHeaders.slice(0, 4).join(', ')}
+                      {report.metrics.securityData.missingHeaders.length > 4 && ` (+${report.metrics.securityData.missingHeaders.length - 4} more)`}
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-xs font-mono">
+                  <div className="p-2.5 rounded-xl bg-slate-900/60 border border-white/5 flex items-center justify-between">
+                    <span className="text-slate-400 text-[11px]">Mixed Content:</span>
+                    <span className={(report.metrics.securityData.mixedContentCount || 0) > 0 ? 'text-rose-400 font-bold' : 'text-emerald-400'}>
+                      {report.metrics.securityData.mixedContentCount ?? 0}
+                    </span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-900/60 border border-white/5 flex items-center justify-between">
+                    <span className="text-slate-400 text-[11px]">Insecure Cookies:</span>
+                    <span className={(report.metrics.securityData.insecureCookies || 0) > 0 ? 'text-amber-400 font-bold' : 'text-emerald-400'}>
+                      {report.metrics.securityData.insecureCookies ?? 0}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -500,9 +641,22 @@ export const TestRunDetailPage: React.FC = () => {
                       </div>
 
                       <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs">
-                        <span className="text-[10px] text-slate-500 capitalize">
-                          Status: {finding.verificationStatus || 'verified'}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            finding.remediationStatus === 'FIXED'
+                              ? 'bg-emerald-500/20 text-emerald-300'
+                              : finding.remediationStatus === 'IN_PROGRESS'
+                              ? 'bg-amber-500/20 text-amber-300'
+                              : finding.remediationStatus === 'ACCEPTED' || finding.remediationStatus === 'FALSE_POSITIVE'
+                              ? 'bg-slate-700/50 text-slate-300'
+                              : 'bg-rose-500/20 text-rose-300'
+                          }`}>
+                            {finding.remediationStatus || 'OPEN'}
+                          </span>
+                          <span className="text-[10px] text-slate-500 capitalize">
+                            {finding.verificationStatus || 'verified'}
+                          </span>
+                        </div>
                         <span className="text-xs font-semibold text-cyan-400 group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
                           <span>Inspect</span>
                           <span>&rarr;</span>

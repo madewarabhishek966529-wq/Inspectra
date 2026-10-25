@@ -31,6 +31,8 @@ const CATEGORIES = [
   { id: 'responsive', label: 'Responsive', desc: 'Multi-device viewport layouts & overflow' },
   { id: 'accessibility', label: 'Accessibility', desc: 'WCAG 2.1 AA automated axe audit' },
   { id: 'seo', label: 'SEO & Metadata', desc: 'Heading hierarchy, titles, and meta tags' },
+  { id: 'performance', label: 'Performance & Vitals', desc: 'Real TTFB, FCP, LCP, CLS, render-blocking scripts' },
+  { id: 'security', label: 'Security & Transport', desc: 'Safe non-destructive HTTPS, OWASP headers, cookie flags' },
   { id: 'console', label: 'Console Logs', desc: 'Uncaught JavaScript exceptions & errors' },
   { id: 'network', label: 'Network', desc: 'Broken assets, 404s, 500s & slow requests' },
 ];
@@ -53,6 +55,8 @@ export const NewRunModal: React.FC<NewRunModalProps> = ({
     'responsive',
     'accessibility',
     'seo',
+    'performance',
+    'security',
     'console',
     'network',
   ]);

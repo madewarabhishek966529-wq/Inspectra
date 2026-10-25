@@ -38,16 +38,22 @@ app.get('/api/worker/runs/:runId/events', (req: Request, res: Response) => {
   res.setHeader('Connection', 'keep-alive');
   res.flushHeaders();
 
-  if (!sseClients.has(runId)) {
-    sseClients.set(runId, new Set());
-  }
-  sseClients.get(runId)!.add(res);
-
   // Send historical events for this run
   const history = runEvents.get(runId) || [];
   for (const ev of history) {
     res.write(`data: ${JSON.stringify(ev)}\n\n`);
   }
+
+  // If run is already completed, finish stream immediately
+  if (runReports.has(runId)) {
+    res.end();
+    return;
+  }
+
+  if (!sseClients.has(runId)) {
+    sseClients.set(runId, new Set());
+  }
+  sseClients.get(runId)!.add(res);
 
   req.on('close', () => {
     sseClients.get(runId)?.delete(res);
@@ -85,30 +91,27 @@ app.post('/api/worker/execute', async (req: Request, res: Response) => {
       const clients = sseClients.get(config.runId);
       if (clients) {
         for (const client of clients) {
-          client.write(`data: ${JSON.stringify(event)}\n\n`);
+          try {
+            client.write(`data: ${JSON.stringify(event)}\n\n`);
+          } catch {}
         }
       }
     });
 
     runReports.set(config.runId, report);
-
-    const reportReadyEvent: ExecutionEventPayload = {
-      runId: config.runId,
-      type: 'COMPLETE',
-      step: 'COMPLETED',
-      message: `Audit completed with overall quality score of ${report.metrics.overallScore}/100`,
-      timestamp: new Date().toISOString()
-    };
-    runEvents.get(config.runId)?.push(reportReadyEvent);
-
+  } catch (err: any) {
+    console.error(`[Worker Error] Run ${config.runId} failed:`, err);
+  } finally {
+    // Terminate SSE client connections cleanly upon run completion
     const clients = sseClients.get(config.runId);
     if (clients) {
       for (const client of clients) {
-        client.write(`data: ${JSON.stringify(reportReadyEvent)}\n\n`);
+        try {
+          client.end();
+        } catch {}
       }
+      sseClients.delete(config.runId);
     }
-  } catch (err: any) {
-    console.error(`[Worker Error] Run ${config.runId} failed:`, err);
   }
 });
 

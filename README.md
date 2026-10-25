@@ -59,10 +59,18 @@ Inspectra consists of four decoupled, cooperating services:
    - **Functional**: Validates interactive elements, button clickability, and link validity.
    - **Forms & Inputs**: Exercises field validation, boundary limits, and submit handlers.
    - **Responsive Viewports**: Tests against Desktop (1440x900), Tablet (768x1024), and Mobile (390x844).
-   - **Accessibility**: Audits WCAG 2.1 AA rules (color contrast, missing image `alt`, landmark roles, aria attributes) via `axe-core`.
+   - **Accessibility**: Audits WCAG 2.1 / 2.2 AA rules (color contrast, missing image `alt`, landmark roles, aria attributes) via `axe-core`.
    - **SEO & Metadata**: Inspects heading hierarchies (`h1`–`h6`), title tags, meta descriptions, and canonical tags.
+   - **Performance & Web Vitals**: Measures real browser Navigation Timings, Time to First Byte (TTFB), First Contentful Paint (FCP), total page load, and render-blocking resources.
+   - **Security & Transport Baseline**: Safe non-destructive auditing of HTTPS transport, OWASP security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy), cookie flags (`Secure`, `HttpOnly`, `SameSite`), and mixed content.
    - **Console & Network**: Captures uncaught JavaScript runtime exceptions, 404s, 500s, and failed network calls.
-3. **Transparent Quality Scoring (v1.0)**:
+3. **Autonomous Project Scheduling & Health Trends**:
+   - Schedule recurring audits (Hourly, Daily, Weekly, or Custom 5-field Cron) with next run execution.
+   - Track longitudinal quality scores and defect counts over time with interactive Recharts trend timelines.
+4. **Actionable Remediation & Verification Lifecycle**:
+   - Every finding provides reproducible steps, actual vs expected outcomes, technical explanation, and verification procedures.
+   - Manage remediation status through an interactive lifecycle: `OPEN`, `IN_PROGRESS`, `FIXED`, `ACCEPTED`, or `FALSE_POSITIVE`.
+5. **Transparent Quality Scoring (v1.0)**:
    - Calculates a 0–100 composite score with letter grades:
      - **A**: 90–100 (Excellent)
      - **B**: 80–89 (Good)
@@ -70,13 +78,13 @@ Inspectra consists of four decoupled, cooperating services:
      - **D**: 60–69 (Needs Work)
      - **F**: <60 (Critical Issues)
    - Explainable penalty deduction based on severity (Critical -15, High -8, Medium -3, Low -1).
-4. **AI-Powered Diagnostics & Remediation**:
+6. **AI-Powered Diagnostics & Remediation**:
    - Queries Ollama (Llama 3.2) to analyze stack traces and DOM context.
    - Built-in deterministic rule engine ensures 100% functionality even when Ollama is offline.
-5. **Real-time Live Execution Cockpit**:
+7. **Real-time Live Execution Cockpit**:
    - Live SSE event streaming with sub-second terminal log updates and step progression stepper.
-6. **Executive Export**:
-   - One-click downloadable PDF audit report and structured JSON payload.
+8. **Multi-Format Professional Report Export**:
+   - One-click downloadable Markdown (`report.md`), PDF report (`report.pdf`), and structured JSON (`report.json`).
 
 ---
 

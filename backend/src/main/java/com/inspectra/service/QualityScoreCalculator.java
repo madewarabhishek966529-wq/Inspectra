@@ -24,6 +24,8 @@ public class QualityScoreCalculator {
             int accessibilityScore,
             int seoScore,
             int visualScore,
+            int performanceScore,
+            int securityScore,
             int totalTests,
             int passedCount,
             int failedCount,
@@ -53,6 +55,8 @@ public class QualityScoreCalculator {
         int accessibilityScore = calculateCategoryScore(results, "accessibility");
         int seoScore = calculateCategoryScore(results, "seo");
         int visualScore = calculateCategoryScore(results, "visual");
+        int performanceScore = calculateCategoryScore(results, "performance");
+        int securityScore = calculateCategoryScore(results, "security");
 
         // Transparent Penalty Formula
         int penalty = critical * 15 + high * 8 + medium * 3 + low * 1;
@@ -66,6 +70,8 @@ public class QualityScoreCalculator {
         map.put("accessibilityScore", accessibilityScore);
         map.put("seoScore", seoScore);
         map.put("visualScore", visualScore);
+        map.put("performanceScore", performanceScore);
+        map.put("securityScore", securityScore);
         map.put("totalTests", totalTests);
         map.put("passedCount", passedCount);
         map.put("failedCount", failedCount);
@@ -84,6 +90,7 @@ public class QualityScoreCalculator {
 
         return new CalculatedQualityMetrics(
                 overallScore, functionalScore, responsiveScore, accessibilityScore, seoScore, visualScore,
+                performanceScore, securityScore,
                 totalTests, passedCount, failedCount, skippedCount, blockedCount,
                 critical, high, medium, low, json
         );

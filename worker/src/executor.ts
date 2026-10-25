@@ -17,6 +17,9 @@ import { runAccessibilityChecks } from './checks/a11y.js';
 import { runResponsiveChecks } from './checks/responsive.js';
 import { runSeoChecks } from './checks/seo.js';
 import { runVisualCheck } from './checks/visual.js';
+import { runPerformanceChecks, PerformanceCheckResult } from './checks/performance.js';
+import { runSecurityChecks, SecurityCheckResult } from './checks/security.js';
+
 
 export class BrowserWorkerExecutor {
   private activeRuns: Map<string, { browser: Browser; isCancelled: boolean }> = new Map();
@@ -159,6 +162,9 @@ export class BrowserWorkerExecutor {
       // 5. Execution Phase
       emit('STATE_CHANGE', 'RUNNING', `Beginning browser test execution across ${pages.length} pages...`);
 
+      let latestPerfData: any = undefined;
+      let latestSecData: any = undefined;
+
       for (let pIdx = 0; pIdx < pages.length; pIdx++) {
         // Check cancellation
         if (this.activeRuns.get(config.runId)?.isCancelled) {
@@ -201,6 +207,24 @@ export class BrowserWorkerExecutor {
           allFindings.push(...seoOut.findings);
         }
 
+        // E. Real Performance & Web Vitals Audit
+        if (config.categories.includes('performance')) {
+          emit('STEP_START', 'RUNNING', `[${currentPage.url}] Measuring actual page load timings and Core Web Vitals...`);
+          const perfOut = await runPerformanceChecks(page, currentPage.url, msg => emit('LOG', 'PERFORMANCE', msg));
+          allResults.push(...perfOut.results);
+          allFindings.push(...perfOut.findings);
+          latestPerfData = perfOut.performanceData;
+        }
+
+        // F. Safe Non-Destructive Security Audit
+        if (config.categories.includes('security')) {
+          emit('STEP_START', 'RUNNING', `[${currentPage.url}] Auditing security headers, transport, and DOM security...`);
+          const secOut = await runSecurityChecks(page, currentPage.url, msg => emit('LOG', 'SECURITY', msg));
+          allResults.push(...secOut.results);
+          allFindings.push(...secOut.findings);
+          latestSecData = secOut.securityData;
+        }
+
         // Capture page screenshot artifact
         const screenshotFileName = `page-${pIdx + 1}-screenshot.png`;
         const screenshotFilePath = path.join(artifactsDir, screenshotFileName);
@@ -220,7 +244,7 @@ export class BrowserWorkerExecutor {
           // Ignore screenshot error
         }
 
-        // E. Visual Regression (on start URL)
+        // G. Visual Regression (on start URL)
         if (config.categories.includes('visual') && pIdx === 0) {
           emit('STEP_START', 'RUNNING', `Executing visual regression comparison on ${currentPage.url}...`);
           const visOut = await runVisualCheck(
@@ -253,11 +277,12 @@ export class BrowserWorkerExecutor {
 
       // 6. Analyzing Phase
       emit('STATE_CHANGE', 'ANALYZING', 'Analyzing defect telemetry and computing quality scores...');
-      const metrics = this.computeMetrics(allResults, allFindings);
+      const metrics = this.computeMetrics(allResults, allFindings, latestPerfData, latestSecData);
 
       const status: WorkerRunReport['status'] = this.activeRuns.get(config.runId)?.isCancelled
         ? 'CANCELLED'
         : 'COMPLETED';
+
 
       const report: WorkerRunReport = {
         runId: config.runId,
@@ -288,7 +313,12 @@ export class BrowserWorkerExecutor {
     }
   }
 
-  private computeMetrics(results: TestResultItem[], findings: Finding[]): QualityMetrics {
+  private computeMetrics(
+    results: TestResultItem[],
+    findings: Finding[],
+    perfData?: any,
+    secData?: any
+  ): QualityMetrics {
     const totalTests = results.length;
     const passedCount = results.filter(r => r.status === 'passed').length;
     const failedCount = results.filter(r => r.status === 'failed').length;
@@ -312,6 +342,8 @@ export class BrowserWorkerExecutor {
     const accessibilityScore = getCategoryScore('accessibility');
     const seoScore = getCategoryScore('seo');
     const visualScore = getCategoryScore('visual');
+    const performanceScore = getCategoryScore('performance');
+    const securityScore = getCategoryScore('security');
 
     // Transparent weighted formula
     // Severe penalty for critical defects (-15 each) and high defects (-8 each)
@@ -326,6 +358,8 @@ export class BrowserWorkerExecutor {
       accessibilityScore,
       seoScore,
       visualScore,
+      performanceScore,
+      securityScore,
       totalTests,
       passedCount,
       failedCount,
@@ -334,7 +368,9 @@ export class BrowserWorkerExecutor {
       criticalFindings,
       highFindings,
       mediumFindings,
-      lowFindings
+      lowFindings,
+      performanceData: perfData,
+      securityData: secData
     };
   }
 }

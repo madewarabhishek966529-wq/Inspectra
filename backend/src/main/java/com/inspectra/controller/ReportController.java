@@ -82,4 +82,19 @@ public class ReportController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"inspectra-report-" + id + ".pdf\"")
                 .body(pdfBytes);
     }
+
+    @GetMapping(value = "/{id}/report.md", produces = "text/markdown;charset=UTF-8")
+    public ResponseEntity<String> downloadMarkdownReport(@PathVariable String id) {
+        Optional<TestRun> runOpt = testRunRepository.findById(id);
+        if (runOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+        TestRun run = runOpt.get();
+        List<TestResult> results = testResultRepository.findByTestRunId(id);
+        List<Finding> findings = findingRepository.findByTestRunId(id);
+
+        String markdown = reportExportService.generateMarkdownReport(run, results, findings);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"inspectra-report-" + id + ".md\"")
+                .body(markdown);
+    }
 }

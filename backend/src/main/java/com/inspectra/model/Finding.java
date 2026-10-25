@@ -50,6 +50,18 @@ public class Finding {
     @Column(name = "ai_enhanced")
     private Boolean aiEnhanced = false;
 
+    @Column(name = "detection_method", length = 128)
+    private String detectionMethod;
+
+    @Column(name = "technical_explanation", columnDefinition = "TEXT")
+    private String technicalExplanation;
+
+    @Column(name = "verification_procedure", columnDefinition = "TEXT")
+    private String verificationProcedure;
+
+    @Column(name = "remediation_status", length = 32)
+    private String remediationStatus = "OPEN"; // OPEN, IN_PROGRESS, FIXED, ACCEPTED, FALSE_POSITIVE
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt = Instant.now();
 
@@ -99,6 +111,19 @@ public class Finding {
 
     public Boolean getAiEnhanced() { return aiEnhanced; }
     public void setAiEnhanced(Boolean aiEnhanced) { this.aiEnhanced = aiEnhanced; }
+
+    public String getDetectionMethod() { return detectionMethod; }
+    public void setDetectionMethod(String detectionMethod) { this.detectionMethod = detectionMethod; }
+
+    public String getTechnicalExplanation() { return technicalExplanation; }
+    public void setTechnicalExplanation(String technicalExplanation) { this.technicalExplanation = technicalExplanation; }
+
+    public String getVerificationProcedure() { return verificationProcedure; }
+    public void setVerificationProcedure(String verificationProcedure) { this.verificationProcedure = verificationProcedure; }
+
+    public String getRemmediationStatus() { return remediationStatus; }
+    public String getRemediationStatus() { return remediationStatus; }
+    public void setRemediationStatus(String remediationStatus) { this.remediationStatus = remediationStatus; }
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }

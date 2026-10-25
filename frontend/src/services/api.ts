@@ -185,6 +185,7 @@ export const apiRuns = {
 
   getPdfUrl: (id: string): string => `${API_BASE}/runs/${id}/report.pdf`,
   getJsonUrl: (id: string): string => `${API_BASE}/runs/${id}/report.json`,
+  getMarkdownUrl: (id: string): string => `${API_BASE}/runs/${id}/report.md`,
 };
 
 // Findings API
@@ -202,7 +203,13 @@ export const apiFindings = {
 
   update: (
     id: string,
-    updates: { verificationStatus?: string; suggestedFix?: string }
+    updates: {
+      verificationStatus?: string;
+      remediationStatus?: string;
+      suggestedFix?: string;
+      technicalExplanation?: string;
+      verificationProcedure?: string;
+    }
   ): Promise<Finding> =>
     request(`/findings/${id}`, {
       method: 'PATCH',

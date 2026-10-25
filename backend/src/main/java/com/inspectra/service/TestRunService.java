@@ -108,11 +108,10 @@ public class TestRunService {
         recordEvent(runId, "STATE_CHANGE", "QUEUED", triggerMsg, null);
 
         // Asynchronously trigger execution on browser worker
-        java.util.concurrent.CompletableFuture.runAsync(() -> triggerWorkerExecution(run, req));
+        triggerWorkerExecution(run, req);
 
         return run;
     }
-
 
     @Async
     public void triggerWorkerExecution(TestRun run, RunRequest req) {
@@ -162,16 +161,26 @@ public class TestRunService {
                     .uri(workerBaseUrl + "/api/worker/runs/" + runId + "/events")
                     .retrieve()
                     .bodyToFlux(String.class)
-                    .publishOn(reactor.core.scheduler.Schedulers.boundedElastic())
+                    .takeUntil(eventStr -> {
+                        try {
+                            JsonNode ev = objectMapper.readTree(eventStr);
+                            String type = ev.path("type").asText("");
+                            String step = ev.path("step").asText("");
+                            return "COMPLETE".equals(type) || "COMPLETED".equals(step) || "FAILED".equals(step) || "CANCELLED".equals(step);
+                        } catch (Exception e) {
+                            return false;
+                        }
+                    })
                     .doOnNext(eventStr -> processWorkerEvent(runId, eventStr))
                     .doOnError(err -> log.warn("Worker SSE stream closed for run {}: {}", runId, err.getMessage()))
-                    .doOnComplete(() -> finalizeRunResults(runId))
                     .blockLast(Duration.ofMinutes(5));
         } catch (Exception e) {
             log.info("SSE event stream completed for run {}: {}", runId, e.getMessage());
+        } finally {
             finalizeRunResults(runId);
         }
     }
+
 
     private void processWorkerEvent(String runId, String eventStr) {
         try {
@@ -190,15 +199,10 @@ public class TestRunService {
             }
 
             recordEvent(runId, type, step, message, details != null ? details.toString() : null);
-
-            if ("COMPLETE".equals(type) || "COMPLETED".equals(step) || "FAILED".equals(step)) {
-                java.util.concurrent.CompletableFuture.runAsync(() -> finalizeRunResults(runId));
-            }
         } catch (Exception e) {
             log.debug("Event parse ignored: {}", e.getMessage());
         }
     }
-
 
     private synchronized void finalizeRunResults(String runId) {
         Optional<TestRun> runOpt = testRunRepository.findById(runId);
@@ -210,32 +214,26 @@ public class TestRunService {
         }
 
         try {
-            // Fetch completed report from worker with retry loop to prevent race conditions
-            JsonNode report = null;
-            for (int attempt = 0; attempt < 15; attempt++) {
+            JsonNode statusResp = null;
+            // Retry fetch up to 3 times in case of micro-delays in report emission
+            for (int retry = 0; retry < 3; retry++) {
                 try {
-                    JsonNode statusResp = webClient.get()
+                    statusResp = webClient.get()
                             .uri(workerBaseUrl + "/api/worker/runs/" + runId + "/status")
                             .retrieve()
                             .bodyToMono(JsonNode.class)
-                            .timeout(Duration.ofSeconds(5))
+                            .timeout(Duration.ofSeconds(10))
                             .block();
 
-                    if (statusResp != null && statusResp.has("report") && !statusResp.get("report").isNull()) {
-                        report = statusResp.get("report");
+                    if (statusResp != null && statusResp.has("report")) {
                         break;
                     }
-                } catch (Exception e) {
-                    log.debug("Waiting for worker report for run {} (attempt {}): {}", runId, attempt, e.getMessage());
-                }
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ignored) {}
+                } catch (Exception ignored) {}
+                Thread.sleep(400);
             }
 
-            if (report != null) {
-
+            if (statusResp != null && statusResp.has("report")) {
+                JsonNode report = statusResp.get("report");
 
                 // Save Discovered Pages
                 if (report.has("pagesDiscovered")) {
@@ -288,6 +286,21 @@ public class TestRunService {
                         finding.setSuggestedFix(f.path("suggestedFix").asText(""));
                         finding.setConfidence(f.path("confidence").asDouble(1.0));
                         finding.setVerificationStatus(f.path("verificationStatus").asText("verified"));
+                        if (f.has("detectionMethod")) {
+                            finding.setDetectionMethod(f.get("detectionMethod").asText());
+                        }
+                        if (f.has("technicalExplanation")) {
+                            finding.setTechnicalExplanation(f.get("technicalExplanation").asText());
+                        }
+                        if (f.has("verificationProcedure")) {
+                            finding.setVerificationProcedure(f.get("verificationProcedure").asText());
+                        }
+                        if (f.has("remediationStatus")) {
+                            finding.setRemediationStatus(f.get("remediationStatus").asText("OPEN"));
+                        }
+                        if (f.has("reproductionSteps")) {
+                            finding.setReproductionStepsJson(f.get("reproductionSteps").toString());
+                        }
                         if (f.has("evidence")) {
                             finding.setEvidenceJson(f.get("evidence").toString());
                         }

@@ -49,8 +49,17 @@ public class FindingController {
             if (updates.containsKey("verificationStatus")) {
                 finding.setVerificationStatus((String) updates.get("verificationStatus"));
             }
+            if (updates.containsKey("remediationStatus")) {
+                finding.setRemediationStatus((String) updates.get("remediationStatus"));
+            }
             if (updates.containsKey("suggestedFix")) {
                 finding.setSuggestedFix((String) updates.get("suggestedFix"));
+            }
+            if (updates.containsKey("technicalExplanation")) {
+                finding.setTechnicalExplanation((String) updates.get("technicalExplanation"));
+            }
+            if (updates.containsKey("verificationProcedure")) {
+                finding.setVerificationProcedure((String) updates.get("verificationProcedure"));
             }
             Finding saved = findingRepository.save(finding);
             return ResponseEntity.ok(saved);

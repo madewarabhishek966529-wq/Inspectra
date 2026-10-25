@@ -31,6 +31,9 @@ export const FindingDetailModal: React.FC<FindingDetailModalProps> = ({
   const [currentStatus, setCurrentStatus] = useState<string>(
     finding.verificationStatus || 'verified'
   );
+  const [currentRemediationStatus, setCurrentRemediationStatus] = useState<string>(
+    finding.remediationStatus || 'OPEN'
+  );
   const [isUpdatingStatus, setIsUpdatingStatus] = useState<boolean>(false);
   const [copiedFix, setCopiedFix] = useState<boolean>(false);
 
@@ -67,6 +70,21 @@ export const FindingDetailModal: React.FC<FindingDetailModalProps> = ({
     }
   };
 
+  const handleRemediationStatusChange = async (newRemediationStatus: string) => {
+    setIsUpdatingStatus(true);
+    try {
+      const updated = await apiFindings.update(finding.id, {
+        remediationStatus: newRemediationStatus,
+      });
+      setCurrentRemediationStatus(newRemediationStatus);
+      if (onStatusUpdated) onStatusUpdated(updated);
+    } catch (err) {
+      console.error('Failed to update remediation status', err);
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
   const handleCopyFix = () => {
     if (finding.suggestedFix) {
       navigator.clipboard.writeText(finding.suggestedFix);
@@ -86,6 +104,11 @@ export const FindingDetailModal: React.FC<FindingDetailModalProps> = ({
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700">
                 {finding.category}
               </span>
+              {finding.detectionMethod && (
+                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-800/80 text-cyan-300 border border-cyan-500/30">
+                  {finding.detectionMethod}
+                </span>
+              )}
               {finding.aiEnhanced && (
                 <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
                   <Sparkles className="w-3 h-3 text-indigo-400" />
@@ -209,6 +232,31 @@ export const FindingDetailModal: React.FC<FindingDetailModalProps> = ({
             </div>
           )}
 
+          {/* Technical Explanation */}
+          {finding.technicalExplanation && (
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                Technical Explanation & Mechanics
+              </h3>
+              <p className="text-xs text-slate-300 font-mono leading-relaxed bg-slate-900/50 p-4 rounded-xl border border-white/5">
+                {finding.technicalExplanation}
+              </p>
+            </div>
+          )}
+
+          {/* Verification Procedure */}
+          {finding.verificationProcedure && (
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-indigo-500/20">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-indigo-400 mb-2">
+                <CheckCircle className="w-4 h-4" />
+                Fix Verification Procedure
+              </div>
+              <div className="text-xs text-slate-300 font-mono leading-relaxed">
+                {finding.verificationProcedure}
+              </div>
+            </div>
+          )}
+
           {/* Evidence Details */}
           {evidence && (
             <div>
@@ -248,6 +296,41 @@ export const FindingDetailModal: React.FC<FindingDetailModalProps> = ({
               </div>
             </div>
           )}
+
+          {/* Remediation Lifecycle Status */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-slate-900/80 border border-white/10">
+            <div>
+              <div className="text-xs font-semibold text-slate-200">Remediation Lifecycle</div>
+              <div className="text-[11px] text-slate-400">
+                Actionable defect resolution status.
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {(['OPEN', 'IN_PROGRESS', 'FIXED', 'ACCEPTED', 'FALSE_POSITIVE'] as const).map((rst) => {
+                const isActive = (currentRemediationStatus || 'OPEN').toUpperCase() === rst;
+                return (
+                  <button
+                    key={rst}
+                    disabled={isUpdatingStatus}
+                    onClick={() => handleRemediationStatusChange(rst)}
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold tracking-wide border transition-all ${
+                      isActive
+                        ? rst === 'FIXED'
+                          ? 'bg-emerald-500/20 border-emerald-500/60 text-emerald-300 shadow-sm shadow-emerald-500/20'
+                          : rst === 'IN_PROGRESS'
+                          ? 'bg-amber-500/20 border-amber-500/60 text-amber-300'
+                          : rst === 'FALSE_POSITIVE' || rst === 'ACCEPTED'
+                          ? 'bg-slate-700/50 border-slate-600 text-slate-300'
+                          : 'bg-rose-500/20 border-rose-500/60 text-rose-300'
+                        : 'bg-slate-900/80 border-white/5 text-slate-400 hover:border-white/20'
+                    }`}
+                  >
+                    {rst.replace('_', ' ')}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Verification Status Selector */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-slate-900/80 border border-white/10">
