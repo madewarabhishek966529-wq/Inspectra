@@ -277,7 +277,7 @@ public class ReportExportService {
 
         // Scope Boundaries & Untested Areas
         sb.append("<div class=\"card\" style=\"border-left: 4px solid var(--cyan);\">\n");
-        sb.append("<h4 style=\"margin-top:0;\">Scope Boundaries & Safety Safeguards</h4>\n");
+        sb.append("<h4 style=\"margin-top:0;\">Scope Boundaries &amp; Safety Safeguards</h4>\n");
         sb.append("<ul style=\"font-size: 12px; color: var(--muted); padding-left: 18px; margin: 0;\">\n");
         sb.append("<li><strong>Destructive Guard:</strong> Irreversible operations (delete, financial checkout, purchase, account deletion) were safely identified and excluded.</li>\n");
         sb.append("<li><strong>Domain Scope:</strong> Crawling and audits strictly honored same-origin boundaries without traversing third-party domains.</li>\n");
