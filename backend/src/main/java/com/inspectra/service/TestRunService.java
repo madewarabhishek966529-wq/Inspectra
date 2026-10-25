@@ -333,6 +333,7 @@ public class TestRunService {
                 run.setStatus("COMPLETED");
                 run.setCompletedAt(Instant.now());
                 run.setOverallScore(metrics.overallScore());
+                run.setScoringVersion("2.0");
                 run.setMetricsJson(metrics.metricsJson());
                 if (run.getStartedAt() != null) {
                     run.setDurationMs(Duration.between(run.getStartedAt(), run.getCompletedAt()).toMillis());

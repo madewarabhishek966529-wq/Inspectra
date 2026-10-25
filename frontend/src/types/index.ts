@@ -213,3 +213,23 @@ export interface AiSettings {
   configuredModel: string;
   availableModels: string[];
 }
+
+export interface RunComparison {
+  baseRunId: string;
+  targetRunId: string;
+  baseTargetUrl: string;
+  targetUrl: string;
+  baseCreatedAt?: string;
+  targetCreatedAt?: string;
+  baseOverallScore?: number | null;
+  targetOverallScore?: number | null;
+  scoreDelta?: number | null;
+  baseMetrics?: Record<string, any>;
+  targetMetrics?: Record<string, any>;
+  newFindings: Finding[];
+  resolvedFindings: Finding[];
+  persistentFindings: Finding[];
+  totalNewFindings: number;
+  totalResolvedFindings: number;
+  totalPersistentFindings: number;
+}

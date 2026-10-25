@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: inspectra-backend-test
+  datasource:
+    url: jdbc:h2:mem:inspectratestdb;DB_CLOSE_DELAY=-1
+    driverClassName: org.h2.Driver
+    username: sa
+    password: 
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  flyway:
+    enabled: false
+
+inspectra:
+  security:
+    jwt-secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+    jwt-expiration-ms: 86400000
+  worker:
+    base-url: http://localhost:5001
+  ollama:
+    base-url: http://localhost:11434
+    model: llama3.2
+    timeout-ms: 3000
+  storage:
+    artifacts-dir: ./target/test-artifacts

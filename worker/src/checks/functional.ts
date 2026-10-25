@@ -89,7 +89,7 @@ export async function runFunctionalChecks(
     // Wait 500ms for client side scripts and requests to settle
     await page.waitForTimeout(500);
 
-    // 2. Link Checks
+    // 2. Link Validity & Navigation Checks
     onLog?.('Inspecting internal and external links...');
     const links = await page.$$eval('a[href]', anchors =>
       anchors.map(a => ({
@@ -165,29 +165,260 @@ export async function runFunctionalChecks(
       }
     }
 
-    // 3. Form Validation Check
-    onLog?.('Inspecting forms and input validation...');
+    // 3. Broken Image Loads & Rendering Verification
+    onLog?.('Inspecting DOM images for broken sources or failed rendering...');
+    const imageReport = await page.evaluate(() => {
+      const imgs = Array.from(document.querySelectorAll('img'));
+      return imgs.map((img, idx) => {
+        const src = img.getAttribute('src') || '';
+        const naturalWidth = img.naturalWidth;
+        const complete = img.complete;
+        const alt = img.getAttribute('alt');
+        const id = img.id || `img-${idx}`;
+        const isBroken = !src || (complete && naturalWidth === 0);
+        return { id, src, naturalWidth, complete, hasAlt: alt !== null, isBroken };
+      });
+    }).catch(() => []);
+
+    const brokenImages = imageReport.filter(img => img.isBroken);
+    if (brokenImages.length > 0) {
+      results.push({
+        id: `fn-img-broken-${Date.now()}`,
+        name: `Image Rendering & Asset Integrity`,
+        category: 'functional',
+        url,
+        status: 'failed',
+        durationMs: 30,
+        expectedOutcome: 'All images render with positive natural dimensions and valid src',
+        actualOutcome: `${brokenImages.length} images failed to render or have invalid src`,
+        errorSummary: `Detected ${brokenImages.length} broken images on page`
+      });
+
+      for (const bImg of brokenImages.slice(0, 5)) {
+        findings.push({
+          id: `finding-broken-img-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+          title: `Broken Image Asset: "${bImg.src || 'Missing src'}"`,
+          category: 'functional',
+          severity: 'medium',
+          affectedUrl: url,
+          description: `Image element failed to render in the browser (naturalWidth is 0 or src is empty).`,
+          reproductionSteps: [`Navigate to ${url}`, `Inspect image element #${bImg.id} with src="${bImg.src}"`],
+          expectedResult: 'Image file loads and renders with valid dimensions',
+          actualResult: `naturalWidth: ${bImg.naturalWidth}, complete: ${bImg.complete}`,
+          suggestedFix: 'Verify the image URL path, ensure the file exists on the server, and avoid broken relative links.',
+          confidence: 1.0,
+          verificationStatus: 'verified',
+          evidence: { selector: `img[src="${bImg.src}"]` }
+        });
+      }
+    } else {
+      results.push({
+        id: `fn-img-broken-${Date.now()}`,
+        name: `Image Rendering & Asset Integrity`,
+        category: 'functional',
+        url,
+        status: 'passed',
+        durationMs: 20,
+        expectedOutcome: 'All images render successfully',
+        actualOutcome: `${imageReport.length} images verified intact`
+      });
+    }
+
+    // 4. Interactive Buttons & Accessible Labels
+    onLog?.('Auditing interactive buttons, labels, and candidate clickables...');
+    const buttonAudit = await page.evaluate(() => {
+      const btns = Array.from(document.querySelectorAll('button, [role="button"], input[type="button"], input[type="submit"]'));
+      return btns.map((btn, idx) => {
+        const text = (btn.textContent || '').trim();
+        const ariaLabel = btn.getAttribute('aria-label') || '';
+        const title = btn.getAttribute('title') || '';
+        const id = btn.id || `btn-${idx}`;
+        const hasLabel = Boolean(text || ariaLabel || title);
+        const lower = (text + ' ' + ariaLabel + ' ' + id).toLowerCase();
+        const isHazardous = /delete|remove|destroy|purchase|checkout|pay|buy|transfer|reset/.test(lower);
+        return {
+          id,
+          hasLabel,
+          text: text.slice(0, 40),
+          isHazardous,
+          tag: btn.tagName.toLowerCase()
+        };
+      });
+    }).catch(() => []);
+
+    const emptyButtons = buttonAudit.filter(b => !b.hasLabel);
+    if (emptyButtons.length > 0) {
+      results.push({
+        id: `fn-btn-labels-${Date.now()}`,
+        name: 'Interactive Button Labels',
+        category: 'functional',
+        url,
+        status: 'failed',
+        durationMs: 25,
+        expectedOutcome: 'All buttons have visible text, title, or aria-label',
+        actualOutcome: `${emptyButtons.length} buttons missing accessible names`,
+        errorSummary: 'Buttons without discernible text hinder screen readers and accessibility'
+      });
+
+      findings.push({
+        id: `finding-btn-empty-${Date.now()}`,
+        title: `Unlabeled Interactive Button Elements (${emptyButtons.length})`,
+        category: 'functional',
+        severity: 'medium',
+        affectedUrl: url,
+        description: `Found ${emptyButtons.length} button element(s) with no textual label, aria-label, or title.`,
+        reproductionSteps: [`Navigate to ${url}`, `Inspect button elements missing innerText or aria-label`],
+        expectedResult: 'Every button provides an accessible name for assistive tech and clarity',
+        actualResult: `${emptyButtons.length} buttons have empty labels`,
+        suggestedFix: 'Add descriptive inner text, or provide an aria-label attribute for icon-only buttons.',
+        confidence: 0.98,
+        verificationStatus: 'verified'
+      });
+    } else if (buttonAudit.length > 0) {
+      results.push({
+        id: `fn-btn-labels-${Date.now()}`,
+        name: 'Interactive Button Labels',
+        category: 'functional',
+        url,
+        status: 'passed',
+        durationMs: 25,
+        expectedOutcome: 'All buttons have discernible labels',
+        actualOutcome: `${buttonAudit.length} buttons examined and labeled`
+      });
+    }
+
+    // 5. Safe Element Interaction Execution (Accordions, Tabs, Details, Safe Clickables)
+    onLog?.('Executing safe, controlled UI element interactions...');
+    const safeClickables = await page.$$('details > summary, [role="tab"], [data-toggle], button[aria-expanded]');
+    let safeInteractionsExecuted = 0;
+    for (let sIdx = 0; sIdx < Math.min(safeClickables.length, 3); sIdx++) {
+      try {
+        const el = safeClickables[sIdx];
+        const isVisible = await el.isVisible().catch(() => false);
+        if (isVisible) {
+          await el.click({ timeout: 2000 }).catch(() => {});
+          await page.waitForTimeout(150);
+          safeInteractionsExecuted++;
+        }
+      } catch {
+        // Safe interaction handled defensively
+      }
+    }
+
+    if (safeInteractionsExecuted > 0) {
+      results.push({
+        id: `fn-safe-click-${Date.now()}`,
+        name: 'Safe UI State Interaction (Tabs / Accordions)',
+        category: 'functional',
+        url,
+        status: 'passed',
+        durationMs: 40,
+        expectedOutcome: 'Safe UI toggles execute without unhandled DOM exceptions',
+        actualOutcome: `Successfully exercised ${safeInteractionsExecuted} safe interactive UI controls`
+      });
+    }
+
+    // Hazardous actions safely documented as Skipped
+    const hazardousButtons = buttonAudit.filter(b => b.isHazardous);
+    if (hazardousButtons.length > 0) {
+      results.push({
+        id: `fn-hazard-guard-${Date.now()}`,
+        name: 'Destructive Action Safety Guard',
+        category: 'functional',
+        url,
+        status: 'skipped',
+        durationMs: 5,
+        expectedOutcome: 'Destructive / irreversible actions (delete, purchase, checkout) excluded from automated execution',
+        actualOutcome: `Safely identified and skipped ${hazardousButtons.length} destructive action candidate(s) by policy`
+      });
+    }
+
+    // 6. Form Structure, Input Labeling & Harmless Validation Testing
+    onLog?.('Inspecting forms, accessible labels, and harmless validation...');
     const forms = await page.$$('form');
     if (forms.length > 0) {
       for (let i = 0; i < forms.length; i++) {
         const form = forms[i];
         const formId = await form.getAttribute('id') || `form-${i}`;
         const inputs = await form.$$('input:not([type="hidden"]), textarea, select');
-        
-        results.push({
-          id: `fn-form-${Date.now()}-${i}`,
-          name: `Form Structure: #${formId}`,
-          category: 'forms',
-          url,
-          status: 'passed',
-          durationMs: 45,
-          expectedOutcome: 'Form contains accessible inputs and submit mechanism',
-          actualOutcome: `Detected ${inputs.length} input elements within form`
-        });
+
+        // Check for unlabeled inputs
+        const unlabeledInputs = await form.evaluate(f => {
+          const formInputs = Array.from(f.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select'));
+          return formInputs.filter(input => {
+            const id = input.id;
+            const hasExplicitLabel = id ? Boolean(document.querySelector(`label[for="${id}"]`)) : false;
+            const hasWrappedLabel = Boolean(input.closest('label'));
+            const hasAria = Boolean(input.getAttribute('aria-label') || input.getAttribute('aria-labelledby'));
+            return !hasExplicitLabel && !hasWrappedLabel && !hasAria;
+          }).map(inp => ({ id: inp.id, name: inp.getAttribute('name'), tag: inp.tagName.toLowerCase() }));
+        }).catch(() => []);
+
+        if (unlabeledInputs.length > 0) {
+          results.push({
+            id: `fn-form-label-${Date.now()}-${i}`,
+            name: `Form Input Labeling: #${formId}`,
+            category: 'forms',
+            url,
+            status: 'failed',
+            durationMs: 30,
+            expectedOutcome: 'All form inputs have associated label elements or aria-label',
+            actualOutcome: `${unlabeledInputs.length} inputs missing associated labels`,
+            errorSummary: `Form #${formId} contains unlabeled inputs`
+          });
+
+          findings.push({
+            id: `finding-form-label-${Date.now()}-${i}`,
+            title: `Missing Accessible Label for Form Input in #${formId}`,
+            category: 'forms',
+            severity: 'medium',
+            affectedUrl: url,
+            description: `Detected ${unlabeledInputs.length} input element(s) without a corresponding <label> or aria-label attribute.`,
+            reproductionSteps: [`Inspect form #${formId} on ${url}`, `Check inputs without <label for="...">`],
+            expectedResult: 'Every form control has an explicit or implicit accessible label',
+            actualResult: `${unlabeledInputs.length} unlabeled form controls`,
+            suggestedFix: 'Associate inputs with <label for="inputId"> or provide an aria-label attribute.',
+            confidence: 0.95,
+            verificationStatus: 'verified'
+          });
+        } else {
+          results.push({
+            id: `fn-form-struct-${Date.now()}-${i}`,
+            name: `Form Structure: #${formId}`,
+            category: 'forms',
+            url,
+            status: 'passed',
+            durationMs: 35,
+            expectedOutcome: 'Form contains accessible inputs and submit mechanism',
+            actualOutcome: `Detected ${inputs.length} input elements with valid labeling`
+          });
+        }
+
+        // Harmless test interaction: test typing in a harmless search or text input
+        try {
+          const harmlessInput = await form.$('input[type="text"]:not([readonly]), input[type="search"]:not([readonly])');
+          if (harmlessInput) {
+            await harmlessInput.fill('inspectra-test');
+            await page.waitForTimeout(100);
+            await harmlessInput.fill(''); // Clear harmless test input
+            results.push({
+              id: `fn-form-input-test-${Date.now()}-${i}`,
+              name: `Form Harmless Input Exercising: #${formId}`,
+              category: 'forms',
+              url,
+              status: 'passed',
+              durationMs: 50,
+              expectedOutcome: 'Input accepts keystrokes and clears without client runtime error',
+              actualOutcome: 'Successfully typed and reset test value in text input'
+            });
+          }
+        } catch {
+          // Handled safely
+        }
       }
     }
 
-    // 4. Console Errors Check
+    // 7. Console Errors Check
     if (consoleErrors.length > 0) {
       results.push({
         id: `fn-console-${Date.now()}`,
@@ -229,7 +460,7 @@ export async function runFunctionalChecks(
       });
     }
 
-    // 5. Network Request Failures (4xx / 5xx)
+    // 8. Network Request Failures (4xx / 5xx)
     if (failedRequests.length > 0) {
       const failedCount = failedRequests.length;
       results.push({

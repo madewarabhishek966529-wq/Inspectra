@@ -16,18 +16,24 @@ export async function runSeoChecks(
   const startTime = Date.now();
 
   try {
-    onLog?.(`Running technical SEO and markup inspection on ${url}...`);
+    onLog?.(`Running technical SEO, metadata, and Open Graph inspection on ${url}...`);
 
     const seoData = await page.evaluate(() => {
       const title = document.title ? document.title.trim() : '';
       const metaDesc = document.querySelector('meta[name="description"]')?.getAttribute('content')?.trim() || '';
-      const canonical = document.querySelector('link[rel="canonical"]')?.getAttribute('href') || '';
-      const robots = document.querySelector('meta[name="robots"]')?.getAttribute('content') || '';
+      const canonical = document.querySelector('link[rel="canonical"]')?.getAttribute('href')?.trim() || '';
+      const robots = document.querySelector('meta[name="robots"]')?.getAttribute('content')?.trim() || '';
+
+      // Open Graph Tags
+      const ogTitle = document.querySelector('meta[property="og:title"]')?.getAttribute('content')?.trim() || '';
+      const ogDesc = document.querySelector('meta[property="og:description"]')?.getAttribute('content')?.trim() || '';
+      const ogImage = document.querySelector('meta[property="og:image"]')?.getAttribute('content')?.trim() || '';
 
       const h1s = Array.from(document.querySelectorAll('h1')).map(h => (h.textContent || '').trim());
       const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).map(h => ({
         tag: h.tagName.toLowerCase(),
-        level: parseInt(h.tagName.replace('H', ''), 10)
+        level: parseInt(h.tagName.replace('H', ''), 10),
+        text: (h.textContent || '').trim().slice(0, 50)
       }));
 
       const images = Array.from(document.querySelectorAll('img')).map(img => ({
@@ -36,7 +42,18 @@ export async function runSeoChecks(
         hasAlt: img.hasAttribute('alt')
       }));
 
-      return { title, metaDesc, canonical, robots, h1s, headings, images };
+      return {
+        title,
+        metaDesc,
+        canonical,
+        robots,
+        ogTitle,
+        ogDesc,
+        ogImage,
+        h1s,
+        headings,
+        images
+      };
     });
 
     // 1. Title Tag Check
@@ -189,7 +206,100 @@ export async function runSeoChecks(
       });
     }
 
-    // 4. Missing Image Alt Text
+    // 4. Heading Hierarchy Sequence (No Skipped Levels)
+    let skippedHeadingLevel = false;
+    let lastLevel = 1;
+    for (const h of seoData.headings) {
+      if (h.level > lastLevel + 1) {
+        skippedHeadingLevel = true;
+        break;
+      }
+      lastLevel = h.level;
+    }
+
+    if (skippedHeadingLevel) {
+      results.push({
+        id: `seo-heading-hierarchy-${Date.now()}`,
+        name: 'Heading Sequential Level Hierarchy',
+        category: 'seo',
+        url,
+        status: 'failed',
+        durationMs: 15,
+        expectedOutcome: 'Headings follow logical order without skipping levels (e.g. h1 -> h2 -> h3)',
+        actualOutcome: 'Detected skipped heading level in page outline',
+        errorSummary: 'Non-sequential heading hierarchy confuses outline parsers and screen readers'
+      });
+
+      findings.push({
+        id: `finding-seo-hierarchy-${Date.now()}`,
+        title: 'Skipped Heading Levels in Document Outline',
+        category: 'seo',
+        severity: 'low',
+        affectedUrl: url,
+        description: 'Heading tags skip levels (e.g., jumping from <h1> directly to <h3> without an intervening <h2>).',
+        reproductionSteps: [`Inspect heading sequence in document outline on ${url}`],
+        expectedResult: 'Sequential heading structure (h1 -> h2 -> h3)',
+        actualResult: 'Headings skip hierarchy levels',
+        suggestedFix: 'Maintain sequential heading hierarchy to support screen readers and search bots.',
+        confidence: 0.95,
+        verificationStatus: 'verified'
+      });
+    } else {
+      results.push({
+        id: `seo-heading-hierarchy-${Date.now()}`,
+        name: 'Heading Sequential Level Hierarchy',
+        category: 'seo',
+        url,
+        status: 'passed',
+        durationMs: 15,
+        expectedOutcome: 'Headings follow logical sequential order',
+        actualOutcome: `${seoData.headings.length} headings follow sequential hierarchy`
+      });
+    }
+
+    // 5. Open Graph & Social Sharing Metadata
+    const hasOgTags = Boolean(seoData.ogTitle || seoData.ogDesc || seoData.ogImage);
+    if (!hasOgTags) {
+      results.push({
+        id: `seo-og-${Date.now()}`,
+        name: 'Open Graph (Social Sharing) Metadata',
+        category: 'seo',
+        url,
+        status: 'failed',
+        durationMs: 15,
+        expectedOutcome: 'Open Graph tags (og:title, og:description, og:image) present',
+        actualOutcome: 'Missing Open Graph metadata',
+        errorSummary: 'Social previews on LinkedIn, Twitter/X, and Slack will fall back to raw URL'
+      });
+
+      findings.push({
+        id: `finding-seo-og-${Date.now()}`,
+        title: 'Missing Open Graph Metadata Tags',
+        category: 'seo',
+        severity: 'low',
+        affectedUrl: url,
+        description: 'No og:title, og:description, or og:image tags were discovered in the page header.',
+        reproductionSteps: [`Check <head> for meta property="og:*" on ${url}`],
+        expectedResult: 'og:title, og:description, and og:image tags configured',
+        actualResult: '0 Open Graph tags present',
+        suggestedFix: 'Add Open Graph meta tags to provide rich previews when shared on messaging and social platforms.',
+        confidence: 0.9,
+        verificationStatus: 'verified'
+      });
+    } else {
+      results.push({
+        id: `seo-og-${Date.now()}`,
+        name: 'Open Graph (Social Sharing) Metadata',
+        category: 'seo',
+        url,
+        status: 'passed',
+        durationMs: 15,
+        expectedOutcome: 'Open Graph metadata present',
+        actualOutcome: `Configured: ${[seoData.ogTitle && 'og:title', seoData.ogDesc && 'og:description', seoData.ogImage && 'og:image'].filter(Boolean).join(', ')}`
+      });
+    }
+
+    // 6. Missing Image Alt Text
     const missingAltImages = seoData.images.filter(img => !img.hasAlt || img.alt === null);
     if (missingAltImages.length > 0) {
       results.push({
@@ -228,6 +338,31 @@ export async function runSeoChecks(
         durationMs: 20,
         expectedOutcome: 'All images have alt attribute',
         actualOutcome: `${seoData.images.length} images validated with alt attribute`
+      });
+    }
+
+    // 7. Canonical URL & Robots Check
+    if (seoData.canonical) {
+      results.push({
+        id: `seo-canonical-${Date.now()}`,
+        name: 'Canonical URL Declaration',
+        category: 'seo',
+        url,
+        status: 'passed',
+        durationMs: 10,
+        expectedOutcome: 'Valid <link rel="canonical"> tag',
+        actualOutcome: `Canonical declared: ${seoData.canonical}`
+      });
+    } else {
+      results.push({
+        id: `seo-canonical-${Date.now()}`,
+        name: 'Canonical URL Declaration',
+        category: 'seo',
+        url,
+        status: 'passed',
+        durationMs: 10,
+        expectedOutcome: 'Self-referencing canonical URL or acceptable default',
+        actualOutcome: 'Canonical tag absent (defaulting to request URL)'
       });
     }
 

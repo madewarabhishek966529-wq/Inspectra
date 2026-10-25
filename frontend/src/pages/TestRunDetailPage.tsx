@@ -18,6 +18,7 @@ import {
   Search,
   Filter,
   Share2,
+  GitCompare,
 } from 'lucide-react';
 import {
   DiscoveredPage,
@@ -33,6 +34,7 @@ import { ScoreGauge } from '../components/common/ScoreGauge';
 import { LiveExecutionStepper } from '../components/runs/LiveExecutionStepper';
 import { LiveTerminalLogs } from '../components/runs/LiveTerminalLogs';
 import { FindingDetailModal } from '../components/modal/FindingDetailModal';
+import { RunComparisonModal } from '../components/modal/RunComparisonModal';
 
 export const TestRunDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -54,6 +56,7 @@ export const TestRunDetailPage: React.FC = () => {
   const [isRetrying, setIsRetrying] = useState<boolean>(false);
   const [isCancelling, setIsCancelling] = useState<boolean>(false);
   const [hasConfettiTriggered, setHasConfettiTriggered] = useState<boolean>(false);
+  const [isCompareOpen, setIsCompareOpen] = useState<boolean>(false);
 
   // Load initial run data
   const loadRun = async () => {
@@ -242,17 +245,38 @@ export const TestRunDetailPage: React.FC = () => {
               <span>{isCancelling ? 'Cancelling...' : 'Cancel Run'}</span>
             </button>
           ) : (
-            <button
-              onClick={handleRetry}
-              disabled={isRetrying}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-200 bg-slate-800/80 hover:bg-slate-700 transition-all border border-white/5"
-            >
-              <RotateCw className="w-3.5 h-3.5" />
-              <span>Re-run Inspection</span>
-            </button>
+            <>
+              <button
+                onClick={handleRetry}
+                disabled={isRetrying}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-200 bg-slate-800/80 hover:bg-slate-700 transition-all border border-white/5"
+              >
+                <RotateCw className="w-3.5 h-3.5" />
+                <span>Re-run Inspection</span>
+              </button>
+
+              <button
+                onClick={() => setIsCompareOpen(true)}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-cyan-300 bg-cyan-950/60 border border-cyan-800/60 hover:bg-cyan-900/40 transition-all"
+              >
+                <GitCompare className="w-3.5 h-3.5" />
+                <span>Compare Runs</span>
+              </button>
+            </>
           )}
 
           {/* Export Downloads */}
+          <a
+            href={apiRuns.getHtmlUrl(run.id)}
+            target="_blank"
+            rel="noreferrer"
+            download
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-indigo-300 bg-indigo-950/60 border border-indigo-800/60 hover:bg-indigo-900/40 transition-all"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>HTML Report</span>
+          </a>
+
           <a
             href={apiRuns.getMarkdownUrl(run.id)}
             target="_blank"
@@ -317,8 +341,11 @@ export const TestRunDetailPage: React.FC = () => {
               Website Health & Quality Score
             </div>
             <ScoreGauge score={run.overallScore} size={150} strokeWidth={12} />
-            <div className="mt-4 text-xs text-slate-400 max-w-xs">
-              Autonomous composite score penalized for critical and high severity defects.
+            <div className="mt-3 text-base font-bold text-cyan-400 font-mono">
+              {Math.round((run.overallScore / 10.0) * 10.0) / 10.0} <span className="text-xs text-slate-500 font-normal">/ 10</span>
+            </div>
+            <div className="mt-2 text-xs text-slate-400 max-w-xs">
+              Evidence-derived composite score penalized for critical and high severity defects.
             </div>
           </div>
 

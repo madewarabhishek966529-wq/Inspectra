@@ -97,4 +97,19 @@ public class ReportController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"inspectra-report-" + id + ".md\"")
                 .body(markdown);
     }
+
+    @GetMapping(value = "/{id}/report.html", produces = MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity<String> downloadHtmlReport(@PathVariable String id) {
+        Optional<TestRun> runOpt = testRunRepository.findById(id);
+        if (runOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+        TestRun run = runOpt.get();
+        List<TestResult> results = testResultRepository.findByTestRunId(id);
+        List<Finding> findings = findingRepository.findByTestRunId(id);
+
+        String html = reportExportService.generateHtmlReport(run, results, findings);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"inspectra-report-" + id + ".html\"")
+                .body(html);
+    }
 }

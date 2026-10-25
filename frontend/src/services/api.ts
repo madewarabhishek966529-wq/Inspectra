@@ -9,7 +9,8 @@ import {
   TestRun,
   User,
   AiSettings,
-  ProjectTrends
+  ProjectTrends,
+  RunComparison
 } from '../types';
 
 
@@ -183,9 +184,13 @@ export const apiRuns = {
     findings: Finding[];
   }> => request(`/runs/${id}/report`),
 
+  compare: (baseRunId: string, targetRunId: string): Promise<RunComparison> =>
+    request(`/runs/compare?baseRunId=${encodeURIComponent(baseRunId)}&targetRunId=${encodeURIComponent(targetRunId)}`),
+
   getPdfUrl: (id: string): string => `${API_BASE}/runs/${id}/report.pdf`,
   getJsonUrl: (id: string): string => `${API_BASE}/runs/${id}/report.json`,
   getMarkdownUrl: (id: string): string => `${API_BASE}/runs/${id}/report.md`,
+  getHtmlUrl: (id: string): string => `${API_BASE}/runs/${id}/report.html`,
 };
 
 // Findings API

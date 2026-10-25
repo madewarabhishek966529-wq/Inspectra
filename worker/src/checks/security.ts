@@ -23,7 +23,7 @@ export async function runSecurityChecks(
   const findings: Finding[] = [];
   const startTime = Date.now();
 
-  onLog?.(`[Security] Executing non-destructive security headers, transport, and DOM audit on ${url}...`);
+  onLog?.(`[Security] Executing passive, non-destructive security baseline audit on ${url}... (Note: Limited baseline assessment, not a full penetration test)`);
 
   const parsedUrl = new URL(url);
   const isHttps = parsedUrl.protocol === 'https:';

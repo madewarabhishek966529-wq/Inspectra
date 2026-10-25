@@ -21,11 +21,31 @@ public class TestRunController {
     private final TestRunRepository testRunRepository;
     private final TestRunService testRunService;
     private final SseBroadcaster sseBroadcaster;
+    private final com.inspectra.service.ScanComparisonService scanComparisonService;
 
-    public TestRunController(TestRunRepository testRunRepository, TestRunService testRunService, SseBroadcaster sseBroadcaster) {
+    public TestRunController(
+            TestRunRepository testRunRepository,
+            TestRunService testRunService,
+            SseBroadcaster sseBroadcaster,
+            com.inspectra.service.ScanComparisonService scanComparisonService
+    ) {
         this.testRunRepository = testRunRepository;
         this.testRunService = testRunService;
         this.sseBroadcaster = sseBroadcaster;
+        this.scanComparisonService = scanComparisonService;
+    }
+
+    @GetMapping("/compare")
+    public ResponseEntity<?> compareRuns(
+            @RequestParam String baseRunId,
+            @RequestParam String targetRunId
+    ) {
+        try {
+            var comparison = scanComparisonService.compareRuns(baseRunId, targetRunId);
+            return ResponseEntity.ok(comparison);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping
