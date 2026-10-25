@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Layers, Search, Filter, RotateCw, ArrowRight, Globe, Play, CalendarClock } from 'lucide-react';
+import { Layers, Search, Filter, RotateCw, ArrowRight, Globe, Play, CalendarClock, GitCompare } from 'lucide-react';
 
 import { TestRun } from '../types';
 import { apiRuns } from '../services/api';
 import { RunStatusBadge } from '../components/common/StatusBadge';
 import { useAuth } from '../context/AuthContext';
+import { RunComparisonModal } from '../components/modal/RunComparisonModal';
 
 interface AllRunsPageProps {
   onOpenNewRun: (defaultUrl?: string) => void;
@@ -17,6 +18,7 @@ export const AllRunsPage: React.FC<AllRunsPageProps> = ({ onOpenNewRun }) => {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isCompareOpen, setIsCompareOpen] = useState<boolean>(false);
 
   const loadRuns = async () => {
     setIsLoading(true);
@@ -56,13 +58,23 @@ export const AllRunsPage: React.FC<AllRunsPageProps> = ({ onOpenNewRun }) => {
           </p>
         </div>
 
-        <button
-          onClick={() => onOpenNewRun()}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-slate-950 bg-gradient-to-r from-cyan-400 to-cyan-300 hover:from-cyan-300 shadow-md shadow-cyan-500/20 transition-all self-start sm:self-auto"
-        >
-          <Play className="w-4 h-4 fill-current" />
-          <span>Launch Run</span>
-        </button>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <button
+            onClick={() => setIsCompareOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-cyan-300 bg-cyan-950/60 border border-cyan-800/60 hover:bg-cyan-900/40 transition-all"
+          >
+            <GitCompare className="w-3.5 h-3.5" />
+            <span>Compare Runs</span>
+          </button>
+
+          <button
+            onClick={() => onOpenNewRun()}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-slate-950 bg-gradient-to-r from-cyan-400 to-cyan-300 hover:from-cyan-300 shadow-md shadow-cyan-500/20 transition-all"
+          >
+            <Play className="w-4 h-4 fill-current" />
+            <span>Launch Run</span>
+          </button>
+        </div>
       </div>
 
       {!isAuthenticated && (
@@ -204,6 +216,12 @@ export const AllRunsPage: React.FC<AllRunsPageProps> = ({ onOpenNewRun }) => {
           </div>
         )}
       </div>
+
+      <RunComparisonModal
+        isOpen={isCompareOpen}
+        onClose={() => setIsCompareOpen(false)}
+        availableRuns={runs.filter((r) => r.status === 'COMPLETED')}
+      />
     </div>
   );
 };

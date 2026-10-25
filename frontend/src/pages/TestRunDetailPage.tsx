@@ -745,6 +745,43 @@ export const TestRunDetailPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Scope Boundaries & Safety Safeguards */}
+      <div className="p-6 rounded-3xl glass-panel border border-cyan-500/20 bg-gradient-to-r from-slate-950 via-[#0a1224] to-[#0d1b33] space-y-3">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-cyan-400">
+          <ShieldAlert className="w-4 h-4" />
+          <span>Scope Boundaries & Untested Areas Disclaimer</span>
+        </div>
+        <p className="text-xs text-slate-300 leading-relaxed">
+          In strict accordance with ethical automation standards and safety guardrails:
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-slate-400">
+          <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
+            <span className="font-semibold text-slate-200">1. Destructive Operations Guard</span>
+            <p className="text-[11px] leading-normal">
+              Form submissions that initiate financial transactions, purchase items, send external messages, or delete persistent data are safely identified and skipped by policy.
+            </p>
+          </div>
+          <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
+            <span className="font-semibold text-slate-200">2. Authenticated State Boundaries</span>
+            <p className="text-[11px] leading-normal">
+              Only publicly navigable guest workflows are crawled unless authorized test credentials are configured. Credentials are never guessed.
+            </p>
+          </div>
+          <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
+            <span className="font-semibold text-slate-200">3. Same-Origin Boundary</span>
+            <p className="text-[11px] leading-normal">
+              Crawling is strictly isolated to the target host. External hyperlinks are validated for structure but never traversed recursively.
+            </p>
+          </div>
+          <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
+            <span className="font-semibold text-slate-200">4. Passive Security Baseline</span>
+            <p className="text-[11px] leading-normal">
+              Security auditing is non-destructive (analyzing response headers, cookie flags, and DOM protocols). It does not constitute a full penetration test.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Finding Detail Modal */}
       <FindingDetailModal
         finding={selectedFinding}
@@ -753,6 +790,13 @@ export const TestRunDetailPage: React.FC = () => {
           setSelectedFinding(updated);
           loadRun();
         }}
+      />
+
+      {/* Run Comparison Modal */}
+      <RunComparisonModal
+        isOpen={isCompareOpen}
+        onClose={() => setIsCompareOpen(false)}
+        currentRunId={run.id}
       />
     </div>
   );
