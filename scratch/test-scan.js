@@ -63,8 +63,9 @@ async function main() {
   console.log('Scoring Version:', completedRun.scoringVersion);
   console.log('Metrics JSON:', completedRun.metricsJson);
 
-  // 5. Fetch Results & Findings
-  const results = await getJson(`http://localhost:8080/api/runs/${run.id}/results`, token);
+  // 5. Fetch Full Report & Findings
+  const fullReport = await getJson(`http://localhost:8080/api/runs/${run.id}/report`, token);
+  const results = fullReport.results || [];
   console.log(`\nExecuted Tests Count: ${results.length}`);
   const passed = results.filter(r => r.status === 'passed').length;
   const failed = results.filter(r => r.status === 'failed').length;
@@ -72,9 +73,9 @@ async function main() {
   console.log(`Passed: ${passed}, Failed: ${failed}, Skipped (Safe): ${skipped}`);
   results.slice(0, 10).forEach(r => console.log(` - [${r.status.toUpperCase()}] [${r.category}] ${r.name}`));
 
-  const findings = await getJson(`http://localhost:8080/api/runs/${run.id}/findings`, token);
+  const findings = await getJson(`http://localhost:8080/api/findings?runId=${run.id}`, token);
   console.log(`\nConfirmed Findings Count: ${findings.length}`);
-  findings.forEach(f => console.log(` - [${f.severity.toUpperCase()}] [${f.category}] ${f.title} (${f.affectedUrl})`));
+  findings.slice(0, 10).forEach(f => console.log(` - [${f.severity.toUpperCase()}] [${f.category}] ${f.title} (${f.affectedUrl})`));
 
   // 6. Test HTML Report Download
   const htmlReport = await getText(`http://localhost:8080/api/runs/${run.id}/report.html`, token);
