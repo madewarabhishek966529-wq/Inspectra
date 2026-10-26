@@ -88,52 +88,57 @@ Inspectra consists of four decoupled, cooperating services:
 
 ---
 
-## 🚀 Quick Start Guide
+## 🚀 One-Command Full Stack Startup
+
+You can start the entire Inspectra platform—including the frontend, backend orchestrator, Playwright browser worker, database, and target test fixtures—using a single command from the project root.
 
 ### Prerequisites
-- **Node.js**: v18.0 or newer
+- **Node.js**: v18.0 or newer (v20+ recommended)
 - **Java**: JDK 17 (or compatible OpenJDK)
 
 ---
 
-### 1. Launch Test Fixture (Target Website)
-The repository includes an intentionally defective web application to test Inspectra against:
-```powershell
-cd test-fixtures
-npm start
-# Server starts at http://localhost:4000
-```
+### Primary Startup Command (Cross-Platform / Windows 11)
 
----
+From the project root:
 
-### 2. Launch Browser Worker
-```powershell
-cd worker
-npm install   # If not already installed
-npm start
-# Worker runs at http://localhost:5001
-```
-
----
-
-### 3. Launch Backend Orchestrator
-```powershell
-cd backend
-.\mvnw.cmd spring-boot:run
-# Backend runs at http://localhost:8080
-```
-
----
-
-### 4. Launch Frontend Cockpit
-```powershell
-cd frontend
-npm install   # If not already installed
+```bash
 npm run dev
-# Vite runs at http://localhost:5173
 ```
 
-Visit **http://localhost:5173** in your browser. You can click **"Instant 1-Click Demo Login"** to sign in immediately and run an inspection on `http://localhost:4000` or any public website!
+Or using Windows PowerShell:
+
+```powershell
+.\start.ps1
+```
+
+#### What Happens Automatically:
+1. Validates system runtimes (Node.js 18+, Java 17+).
+2. Initializes `.env` from `.env.example` if not already present.
+3. Automatically frees any stale processes on ports `4000`, `5001`, `8080`, and `5173`.
+4. Concurrently launches all 4 decoupled services with color-coded live logs.
+5. Polls HTTP health endpoints until all services are healthy and responsive.
+6. Verifies inter-service integration (Backend ↔ Worker, Backend ↔ Database, Frontend ↔ Backend Proxy).
+7. Prints a unified status banner with direct links.
+
+Once started, visit **http://localhost:5173** and click **"Instant 1-Click Demo Login"** (or use `demo@inspectra.local` / `inspectra123`).
+
+---
+
+## 🛠️ Root Developer Commands
+
+| Command | Purpose |
+|---|---|
+| `npm run dev` | Starts all 4 services natively with health verification & live logs. |
+| `npm run dev:build` | Recompiles worker TypeScript and Spring Boot backend jar, then starts. |
+| `npm run stop` | Gracefully terminates all background services and frees ports. |
+| `npm run restart` | Safely stops running services and boots up a fresh session. |
+| `npm run logs` | Displays service health status and prints the last 50 log entries. |
+| `npm run logs -- -f` | Streams unified live logs from `.inspectra.log`. |
+| `npm run test` | Runs the full automated end-to-end integration test suite. |
+| `npm run clean` | Safely purges build artifacts (`target/`, `dist/`) without touching database data or reports. |
+| `.\start.ps1` | Windows PowerShell alias for `npm run dev`. |
+| `.\stop.ps1` | Windows PowerShell alias for `npm run stop`. |
 
 ---
 

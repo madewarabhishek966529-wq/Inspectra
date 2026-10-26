@@ -1,6 +1,0 @@
-target/
-data/
-artifacts/
-*.log
-.git/
-.idea/

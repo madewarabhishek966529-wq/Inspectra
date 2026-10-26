@@ -1,1 +1,4 @@
+com\inspectra\service\ScanComparisonServiceTest.class
+com\inspectra\service\ReportExportServiceTest.class
+com\inspectra\service\QualityScoreCalculatorTest.class
 com\inspectra\InspectraApplicationTests.class

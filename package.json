@@ -11,10 +11,7 @@
     "restart": "node scripts/dev.js --restart",
     "logs": "node scripts/logs.js",
     "test": "node scripts/test-all.js",
-    "clean": "node scripts/clean.js",
-    "docker:up": "docker compose up --build",
-    "docker:down": "docker compose down",
-    "docker:logs": "docker compose logs -f"
+    "clean": "node scripts/clean.js"
   },
   "keywords": [
     "qa-automation",

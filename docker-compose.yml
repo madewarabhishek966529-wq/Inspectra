@@ -1,4 +1,0 @@
-# Symlink/Alias for compose.yaml
-# See compose.yaml for full configuration
-include:
-  - compose.yaml
