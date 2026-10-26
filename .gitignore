@@ -27,6 +27,7 @@ worker/artifacts/
 .env
 .env.local
 .env.*.local
+.inspectra-pids.json
 
 # IDE & OS
 .idea/
